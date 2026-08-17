@@ -15,7 +15,7 @@ function Perfil() {
         <div className="foto-container">
 
           <img
-            src="/foto-perfil.jpg"
+            src="perfil.png"
             alt="Foto de perfil"
             className="foto-perfil"
           />
