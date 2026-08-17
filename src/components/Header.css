@@ -1,0 +1,129 @@
+@font-face {
+  font-family: "NovaQuinta";
+  src: url("../assets/fontes/NovaQuinta.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Qafinte";
+  src: url("../assets/fontes/Qafinte.otf") format("opentype");
+}
+
+
+/* Cabeçalho */
+.topo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background-color: #66042a;
+  padding-bottom: 10px;
+}
+
+/* Logo */
+.logo img {
+  width: 200px;
+  height: 160px;
+  object-fit: contain;
+  display: block;
+}
+
+
+/* Menu */
+.menu {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+/* Itens do menu */
+.menu li {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+
+/* Links */
+.menu li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #ffffff;
+  text-decoration: none;
+
+  padding: 5px 10px;
+}
+
+
+/* Ícones */
+.menu li a img {
+  width: 16px;
+  height: 16px;
+}
+
+
+/* Quando passar o mouse */
+.menu li a:hover {
+  background-color: #66042a;
+  color: #000000;
+}
+
+.menu-mobile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #66042a;
+}
+
+.menu-mobile a {
+  color: white;
+  text-decoration: none;
+  padding: 15px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.menu-mobile a:hover {
+  background-color: #ffffff;
+  color: #66042a;
+}   
+
+/* Botão do menu mobile */
+.botao-menu {
+  display: none;
+
+  background: none;
+  border: none;
+
+  color: white;
+  font-size: 28px;
+
+  cursor: pointer;
+}
+
+
+/* Configurações para celular */
+@media (max-width: 768px) {
+
+  .topo {
+    position: relative;
+  }
+
+  /* Esconde o menu normal */
+  .menu {
+    display: none;
+  }
+
+  /* Mostra o botão */
+  .botao-menu {
+    display: block;
+
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+
+}

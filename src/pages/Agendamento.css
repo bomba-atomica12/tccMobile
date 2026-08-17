@@ -1,0 +1,765 @@
+* {
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   PÁGINA
+======================================== */
+
+.pagina-agendamento {
+  min-height: 100vh;
+  background: #faf7f8;
+  padding: 20px 16px 35px;
+}
+
+
+/* ========================================
+   TÍTULO
+======================================== */
+
+.titulo-agendamento {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 15px;
+
+  background: #ffffff;
+
+  padding: 22px 20px;
+
+  border-radius: 18px;
+
+  box-shadow: 0 3px 15px rgba(102, 4, 42, 0.07);
+}
+
+.titulo-agendamento h1 {
+  margin: 0;
+
+  color: #66042a;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-style: italic;
+
+  font-size: 28px;
+
+  font-weight: 500;
+}
+
+
+/* ========================================
+   CONTEÚDO PRINCIPAL
+======================================== */
+
+.conteudo-agendamento {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns: 260px 1fr;
+
+  gap: 22px;
+}
+
+
+/* ========================================
+   COLUNA DE INFORMAÇÕES
+======================================== */
+
+.coluna-informacoes {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+
+/* ========================================
+   CARDS
+======================================== */
+
+.informacoes,
+.detalhes-agendamento {
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  box-shadow:
+    0 3px 15px
+    rgba(102, 4, 42, 0.06);
+}
+
+
+.informacoes h2,
+.detalhes-agendamento h2,
+.area-agendamento h2 {
+  color: #66042a;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-weight: 500;
+}
+
+
+/* ========================================
+   TÍTULOS DOS CARDS
+======================================== */
+
+.informacoes h2 {
+  margin: 0 0 22px;
+
+  font-size: 21px;
+}
+
+
+.detalhes-agendamento h2 {
+  margin: 0 0 18px;
+
+  font-size: 20px;
+}
+
+
+/* ========================================
+   CAMPOS
+======================================== */
+
+.campo {
+  margin-bottom: 17px;
+}
+
+
+.campo:last-child {
+  margin-bottom: 0;
+}
+
+
+.campo label {
+  display: block;
+
+  color: #66042a;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  margin-bottom: 7px;
+}
+
+
+.campo input,
+.campo select {
+  width: 100%;
+
+  height: 44px;
+
+  padding: 0 12px;
+
+  border:
+    1px solid #eadde2;
+
+  border-radius: 10px;
+
+  background: #fdfbfc;
+
+  color: #444;
+
+  font-size: 13px;
+
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+
+.campo input::placeholder {
+  color: #aaa;
+}
+
+
+.campo input:focus,
+.campo select:focus {
+  border-color: #66042a;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(102, 4, 42, 0.07);
+}
+
+
+/* ========================================
+   DETALHES
+======================================== */
+
+.detalhes-agendamento {
+  border:
+    1px solid #f0e5e9;
+}
+
+
+.detalhes-agendamento p {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+
+  color: #777;
+
+  font-size: 13px;
+
+  margin: 14px 0;
+}
+
+
+.detalhes-agendamento strong {
+  color: #66042a;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.3px;
+}
+
+
+/* ========================================
+   ÁREA DO AGENDAMENTO
+======================================== */
+
+.area-agendamento {
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 3px 15px
+    rgba(102, 4, 42, 0.06);
+}
+
+
+.area-agendamento > h2 {
+  margin: 0 0 20px;
+
+  font-size: 22px;
+}
+
+
+/* ========================================
+   CALENDÁRIO
+======================================== */
+
+.calendario {
+  border:
+    1px solid #f0e5e9;
+
+  border-radius: 15px;
+
+  padding: 18px;
+
+  background: #fffafb;
+}
+
+
+/* ========================================
+   MÊS
+======================================== */
+
+.mes {
+  text-align: center;
+
+  color: #66042a;
+
+  font-size: 18px;
+
+  font-weight: 600;
+
+  margin-bottom: 20px;
+}
+
+
+/* ========================================
+   DIAS DA SEMANA
+======================================== */
+
+.dias-semana,
+.dias {
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  gap: 7px;
+}
+
+
+.dias-semana {
+  margin-bottom: 8px;
+}
+
+
+.dias-semana span {
+  text-align: center;
+
+  color: #a0838e;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+
+/* ========================================
+   DIAS
+======================================== */
+
+.dia {
+  width: 100%;
+
+  aspect-ratio: 1;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #555;
+
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+
+.dia:hover {
+  background: #f4e1e8;
+
+  color: #66042a;
+
+  transform: translateY(-1px);
+}
+
+
+.dia.selecionado {
+  background: #66042a;
+
+  color: #ffffff;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 4px 9px
+    rgba(102, 4, 42, 0.20);
+}
+
+
+.dia:disabled {
+  background: #f4f1f2;
+
+  color: #c5bfc1;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* ========================================
+   ÁREA DE HORÁRIOS
+======================================== */
+
+.area-horarios {
+  margin-top: 25px;
+}
+
+
+.area-horarios h2 {
+  margin-bottom: 14px;
+
+  font-size: 20px;
+}
+
+
+/* ========================================
+   AVISO
+======================================== */
+
+.aviso-horario {
+  margin: 0;
+
+  padding: 16px;
+
+  border-radius: 12px;
+
+  background: #faf4f6;
+
+  border:
+    1px solid #f1e1e7;
+
+  color: #8a747c;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+
+/* ========================================
+   HORÁRIOS
+======================================== */
+
+.horarios {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 9px;
+}
+
+
+.horario {
+  min-height: 43px;
+
+  border:
+    1px solid #ead4dc;
+
+  border-radius: 10px;
+
+  background: #fff5f8;
+
+  color: #66042a;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.horario:hover {
+  background: #f2dce4;
+
+  transform: translateY(-1px);
+}
+
+
+.horario.selecionado {
+  background: #66042a;
+
+  border-color: #66042a;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 9px
+    rgba(102, 4, 42, 0.18);
+}
+
+
+/* ========================================
+   MENSAGEM
+======================================== */
+
+.mensagem-agendamento {
+  margin: 18px 0 0;
+
+  padding: 14px;
+
+  border-radius: 11px;
+
+  background: #f7e8ed;
+
+  color: #66042a;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+
+/* ========================================
+   BOTÃO CONFIRMAR
+======================================== */
+
+.botao-confirmar {
+  width: 100%;
+
+  min-height: 50px;
+
+  margin-top: 22px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #66042a;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 5px 12px
+    rgba(102, 4, 42, 0.18);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.botao-confirmar:hover {
+  background: #4d031f;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 15px
+    rgba(102, 4, 42, 0.23);
+}
+
+
+.botao-confirmar:active {
+  transform: translateY(0);
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+
+  .pagina-agendamento {
+    padding: 12px 12px 30px;
+  }
+
+
+  /* Título */
+
+  .titulo-agendamento {
+    padding: 18px;
+
+    margin-bottom: 12px;
+
+    border-radius: 16px;
+  }
+
+
+  .titulo-agendamento h1 {
+    font-size: 25px;
+  }
+
+
+  /* Conteúdo */
+
+  .conteudo-agendamento {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+  }
+
+
+  /* Informações */
+
+  .informacoes,
+  .detalhes-agendamento,
+  .area-agendamento {
+    padding: 18px;
+
+    border-radius: 16px;
+  }
+
+
+  .informacoes h2 {
+    font-size: 20px;
+
+    margin-bottom: 18px;
+  }
+
+
+  /* Detalhes */
+
+  .detalhes-agendamento {
+    order: 2;
+  }
+
+
+  /* Área de agendamento */
+
+  .area-agendamento {
+    order: 1;
+  }
+
+
+  .area-agendamento > h2 {
+    font-size: 21px;
+
+    margin-bottom: 17px;
+  }
+
+
+  /* Calendário */
+
+  .calendario {
+    padding: 14px;
+
+    border-radius: 13px;
+  }
+
+
+  .mes {
+    font-size: 17px;
+
+    margin-bottom: 17px;
+  }
+
+
+  .dias-semana,
+  .dias {
+    gap: 5px;
+  }
+
+
+  .dias-semana span {
+    font-size: 10px;
+  }
+
+
+  .dia {
+    border-radius: 9px;
+
+    font-size: 12px;
+  }
+
+
+  /* Horários */
+
+  .area-horarios {
+    margin-top: 22px;
+  }
+
+
+  .area-horarios h2 {
+    font-size: 19px;
+  }
+
+
+  .horarios {
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    gap: 7px;
+  }
+
+
+  .horario {
+    min-height: 43px;
+
+    font-size: 12px;
+
+    border-radius: 9px;
+  }
+
+
+  /* Botão */
+
+  .botao-confirmar {
+    min-height: 52px;
+
+    font-size: 14px;
+
+    margin-top: 20px;
+  }
+
+}
+
+
+/* ========================================
+   TELAS MUITO PEQUENAS
+======================================== */
+
+@media (max-width: 380px) {
+
+  .pagina-agendamento {
+    padding: 10px 9px 25px;
+  }
+
+
+  .titulo-agendamento,
+  .informacoes,
+  .detalhes-agendamento,
+  .area-agendamento {
+    padding: 15px;
+  }
+
+
+  .titulo-agendamento h1 {
+    font-size: 23px;
+  }
+
+
+  .calendario {
+    padding: 10px;
+  }
+
+
+  .dias-semana,
+  .dias {
+    gap: 3px;
+  }
+
+
+  .dia {
+    font-size: 11px;
+
+    border-radius: 7px;
+  }
+
+
+  .horarios {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .horario {
+    min-height: 42px;
+  }
+
+}

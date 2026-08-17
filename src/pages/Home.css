@@ -1,0 +1,129 @@
+.home {
+  min-height: 100vh;
+}
+
+
+.conteudo-home {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px 60px;
+  box-sizing: border-box;
+}
+
+
+.boas-vindas {
+  width: 100%;
+  max-width: 650px;
+  margin: 20px auto 0;
+  text-align: center;
+  padding: 25px 15px;
+  box-sizing: border-box;
+}
+
+
+.boas-vindas h1 {
+  color: #66042a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 34px;
+  margin: 0 0 12px 0;
+}
+
+
+.boas-vindas p {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 500px;
+}
+
+
+/* PROCEDIMENTOS */
+
+.procedimentos-home {
+  margin-top: 45px;
+}
+
+.procedimentos-home h2{
+  text-align: center;
+  color: #66042a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 26px;
+  margin: 0 0 28px 0;
+  position: relative;
+}
+
+
+.lista-procedimentos {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+
+/* PRODUTOS */
+
+.produtos-home {
+  margin-top: 70px;
+}
+
+
+.produtos-home h2 {
+  text-align: center;
+  color: #66042a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 26px;
+  margin: 0 0 28px 0;
+  position: relative;
+}
+
+
+.lista-produtos {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Pequena linha decorativa abaixo do título */
+
+.procedimentos-home h2::after,
+.produtos-home h2::after {
+  content: "";
+  display: block;
+  width: 300px;
+  height: 3px;
+  background-color: #66042a;
+  border-radius: 10px;
+  margin: 10px auto 0;
+}
+
+/* Configurações para celular */
+
+@media (max-width: 768px) {
+
+  .logo img {
+    width: 150px;
+    height: 120px;
+  }
+
+  .conteudo-home {
+    padding: 20px 15px 40px;
+  }
+
+  .boas-vindas {
+    padding: 20px 10px;
+  }
+
+  .boas-vindas h1 {
+    font-size: 28px;
+  }
+
+  .boas-vindas p {
+    font-size: 15px;
+  }
+
+}
