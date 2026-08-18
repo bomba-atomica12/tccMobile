@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./Header.css";
 import MenuMobile from "./MenuMobile";
-
 import logo from "../assets/imagens/mah_estetica.jpeg";
 
 import homeIcon from "../assets/icones/home.png";
@@ -9,6 +8,9 @@ import procedimentosIcon from "../assets/icones/procedimentos.png";
 import lojaIcon from "../assets/icones/loja.png";
 import sobreIcon from "../assets/icones/sobre_nos.png";
 import contatoIcon from "../assets/icones/contato.png";
+import carrinhoIcon from "../assets/icones/carrinho.png";
+import perfilIcon from "../assets/icones/perfil_vaziu.png";
+
 
 function Header({ setPagina }) {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -16,90 +18,151 @@ function Header({ setPagina }) {
   return (
     <header className="topo">
 
-      <div className="logo">
+      {/* =====================================================
+          LOGO
+      ===================================================== */}
+
+      <a
+        href="#"
+        className="logo"
+        onClick={() => setPagina("home")}
+      >
         <img
           src={logo}
-          alt="Logo da Mah Estética"
+          alt="Mah Estética"
         />
-      </div>
+      </a>
+
+
+      {/* =====================================================
+          MENU PRINCIPAL
+      ===================================================== */}
+
+      <nav className="menu">
+
+        {/* HOME */}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("home");
+          }}
+        >
+          <img src={homeIcon} alt="" />
+          <span>Home</span>
+        </a>
+
+
+        {/* PROCEDIMENTOS */}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("procedimentos");
+          }}
+        >
+          <img src={procedimentosIcon} alt="" />
+          <span>Procedimentos</span>
+        </a>
+
+
+        {/* AGENDAMENTOS */}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("agendamento");
+          }}
+        >
+          <img src={lojaIcon} alt="" />
+          <span>Agendamentos</span>
+        </a>
+
+
+        {/* LOJA */}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("loja");
+          }}
+        >
+          <img src={lojaIcon} alt="" />
+          <span>Loja</span>
+        </a>
+
+
+        {/* SOBRE */}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("sobre");
+          }}
+        >
+          <img src={sobreIcon} alt="" />
+          <span>Sobre Nós</span>
+        </a>
+
+
+        {/* CONTATO */}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("contato");
+          }}
+        >
+          <img src={contatoIcon} alt="" />
+          <span>Contato</span>
+        </a>
+
+      </nav>
+
+
+      {/* =====================================================
+          ÍCONES DO LADO DIREITO
+      ===================================================== */}
+
+      <div className="header-icons">
+
+  <a href="#" title="Loja">
+    <img src={carrinhoIcon} alt="Loja" />
+  </a>
+
+  <a href="#" title="Perfil"
+  onClick={() => setPagina("perfil")}
+  >
+    <img src={perfilIcon} alt="Perfil" />
+  </a>
+
+</div>
+
+
+      {/* =====================================================
+          BOTÃO MENU MOBILE
+      ===================================================== */}
 
       <button
         className="botao-menu"
+        type="button"
         onClick={() => setMenuAberto(!menuAberto)}
+        aria-label="Abrir menu"
       >
         {menuAberto ? "✕" : "☰"}
       </button>
 
-      <ul className="menu">
 
-        {/* Home */}
-        <li>
-          <a href="#">
-            <img src={homeIcon} alt="Home" />
-            Home
-          </a>
-        </li>
+      {/* =====================================================
+          MENU MOBILE
+      ===================================================== */}
 
-
-        {/* Procedimentos */}
-        <li>
-          <a href="#">
-            <img src={procedimentosIcon} alt="Procedimentos" />
-            Procedimentos
-          </a>
-        </li>
-
-
-        {/* Agendamentos */}
-        <li>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setPagina("agendamento");
-            }}
-          >
-            <img src={lojaIcon} alt="Agendamentos" />
-            Agendamentos
-          </a>
-        </li>
-
-
-        {/* Loja */}
-        <li>
-          <a href="#">
-            <img src={lojaIcon} alt="Loja" />
-            Loja
-          </a>
-        </li>
-
-
-        {/* Sobre Nós */}
-        <li>
-          <a href="#">
-            <img src={sobreIcon} alt="Sobre Nós" />
-            Sobre Nós
-          </a>
-        </li>
-
-
-        {/* Contato */}
-        <li>
-          <a href="#">
-            <img src={contatoIcon} alt="Contato" />
-            Contato
-          </a>
-        </li>
-
-      </ul>
-
-
-     {menuAberto && (
-  <MenuMobile
-    setPagina={setPagina}
-    fecharMenu={() => setMenuAberto(false)}
-  />
-)}
+      {menuAberto && (
+        <MenuMobile
+          setPagina={setPagina}
+          fecharMenu={() => setMenuAberto(false)}
+        />
+      )}
 
     </header>
   );

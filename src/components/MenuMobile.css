@@ -1,18 +1,58 @@
 .menu-mobile {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+
+  background: #ffffff;
+
   display: flex;
   flex-direction: column;
-  width: 100%;
-  background-color: #66042a;
+
+  padding: 1rem 0;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+  z-index: 1000;
 }
 
 .menu-mobile a {
-  color: white;
+  display: flex;
+  align-items: center;
+
+  gap: 1rem;
+
+  padding: 1.5rem 2rem;
+
+  color: #3d3034;
+
   text-decoration: none;
-  padding: 15px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+  font-size: 1.6rem;
+
+  border-bottom: 1px solid #e9dddf;
+
+  transition: 0.3s;
+}
+
+/* ÍCONES EM IMAGEM */
+
+.menu-mobile a img {
+  width: 24px !important;
+  height: 24px !important;
+
+  max-width: 24px !important;
+  max-height: 24px !important;
+
+  min-width: 24px;
+  min-height: 24px;
+
+  object-fit: contain;
+
+  display: block;
 }
 
 .menu-mobile a:hover {
-  background-color: #ffffff;
-  color: #66042a;
+  background: #f9edef;
+  color: #c98291;
 }
