@@ -651,7 +651,7 @@ function Home() {
               </span>
 
               <strong>
-                contato@maestetica.com
+                contato.belagestao@gmail.com
               </strong>
 
             </div>

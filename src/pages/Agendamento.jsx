@@ -322,50 +322,6 @@ function Agendamento() {
               />
 
             </div>
-
-
-            {/* Serviço */}
-
-            <div className="campo">
-
-              <label>Escolha o Serviço:</label>
-
-              <select
-                value={servicoSelecionado}
-                onChange={(e) => {
-
-                  setServicoSelecionado(
-                    e.target.value
-                  );
-
-                  // Limpa o horário anterior
-                  setHorarioSelecionado(null);
-
-                  // Limpa mensagens
-                  setMensagem("");
-
-                }}
-              >
-
-                <option value="">
-                  Selecione um serviço
-                </option>
-
-                {servicos.map((servico) => (
-
-                  <option
-                    key={servico}
-                    value={servico}
-                  >
-                    {servico}
-                  </option>
-
-                ))}
-
-              </select>
-
-            </div>
-
           </section>
 
 

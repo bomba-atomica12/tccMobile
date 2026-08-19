@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./Header.css";
 import MenuMobile from "./MenuMobile";
-import logo from "../assets/imagens/mah_estetica.jpeg";
 
 import homeIcon from "../assets/icones/home.png";
 import procedimentosIcon from "../assets/icones/procedimentos.png";
@@ -22,17 +21,17 @@ function Header({ setPagina }) {
           LOGO
       ===================================================== */}
 
-      <a
-        href="#"
-        className="logo"
-        onClick={() => setPagina("home")}
-      >
-        <img
-          src={logo}
-          alt="Mah Estética"
-        />
-      </a>
-
+     <a
+  href="#"
+  className="logo"
+  onClick={(e) => {
+    e.preventDefault();
+    setPagina("home");
+  }}
+>
+  <span className="logo-texto">Bella</span>
+  <span className="logo-ponto">.</span>
+</a>
 
       {/* =====================================================
           MENU PRINCIPAL
@@ -80,42 +79,56 @@ function Header({ setPagina }) {
 
 
         {/* LOJA */}
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            setPagina("loja");
-          }}
-        >
+       <a
+  href="#"
+  onClick={(e) => {
+    e.preventDefault();
+    setPagina("produtos");
+  }}
+> 
           <img src={lojaIcon} alt="" />
           <span>Loja</span>
         </a>
 
 
         {/* SOBRE */}
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            setPagina("sobre");
-          }}
-        >
-          <img src={sobreIcon} alt="" />
-          <span>Sobre Nós</span>
-        </a>
+<a
+  href="#about"
+  onClick={(e) => {
+    e.preventDefault();
+
+    setPagina("home");
+
+    setTimeout(() => {
+      document.getElementById("about")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
+  }}
+>
+  <img src={sobreIcon} alt="" />
+  <span>Sobre Nós</span>
+</a>
 
 
-        {/* CONTATO */}
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            setPagina("contato");
-          }}
-        >
-          <img src={contatoIcon} alt="" />
-          <span>Contato</span>
-        </a>
+{/* CONTATO */}
+<a
+  href="#contact"
+  onClick={(e) => {
+    e.preventDefault();
+
+    setPagina("home");
+
+    setTimeout(() => {
+      document.getElementById("contact")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 100);
+  }}
+>
+  <img src={contatoIcon} alt="" />
+  <span>Contato</span>
+</a>
 
       </nav>
 
@@ -126,15 +139,17 @@ function Header({ setPagina }) {
 
       <div className="header-icons">
 
-  <a href="#" title="Loja">
-    <img src={carrinhoIcon} alt="Loja" />
-  </a>
+      <a href="#" title="Carrinho"
+       onClick={() => setPagina("carrinho")}
+        >
+        <img src={carrinhoIcon} alt="Carrinho" />
+      </a>
 
-  <a href="#" title="Perfil"
-  onClick={() => setPagina("perfil")}
-  >
-    <img src={perfilIcon} alt="Perfil" />
-  </a>
+      <a href="#" title="Perfil"
+        onClick={() => setPagina("perfil")}
+        >
+         <img src={perfilIcon} alt="Perfil" />
+       </a>
 
 </div>
 
