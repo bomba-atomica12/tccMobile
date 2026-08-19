@@ -14,6 +14,26 @@ import perfilIcon from "../assets/icones/perfil_vaziu.png";
 function Header({ setPagina }) {
   const [menuAberto, setMenuAberto] = useState(false);
 
+  // =====================================================
+  // IR PARA UMA SEÇÃO DA HOME
+  // =====================================================
+
+  const irParaSecao = (secao) => {
+    setPagina("home");
+
+    setTimeout(() => {
+      const elemento = document.getElementById(secao);
+
+      if (elemento) {
+        elemento.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 300);
+  };
+
+
   return (
     <header className="topo">
 
@@ -21,17 +41,18 @@ function Header({ setPagina }) {
           LOGO
       ===================================================== */}
 
-     <a
-  href="#"
-  className="logo"
-  onClick={(e) => {
-    e.preventDefault();
-    setPagina("home");
-  }}
->
-  <span className="logo-texto">Bella</span>
-  <span className="logo-ponto">.</span>
-</a>
+      <a
+        href="#"
+        className="logo"
+        onClick={(e) => {
+          e.preventDefault();
+          setPagina("home");
+        }}
+      >
+        <span className="logo-texto">Bella</span>
+        <span className="logo-ponto">.</span>
+      </a>
+
 
       {/* =====================================================
           MENU PRINCIPAL
@@ -40,6 +61,7 @@ function Header({ setPagina }) {
       <nav className="menu">
 
         {/* HOME */}
+
         <a
           href="#"
           onClick={(e) => {
@@ -53,6 +75,7 @@ function Header({ setPagina }) {
 
 
         {/* PROCEDIMENTOS */}
+
         <a
           href="#"
           onClick={(e) => {
@@ -66,6 +89,7 @@ function Header({ setPagina }) {
 
 
         {/* AGENDAMENTOS */}
+
         <a
           href="#"
           onClick={(e) => {
@@ -79,56 +103,45 @@ function Header({ setPagina }) {
 
 
         {/* LOJA */}
-       <a
-  href="#"
-  onClick={(e) => {
-    e.preventDefault();
-    setPagina("produtos");
-  }}
-> 
+
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("produtos");
+          }}
+        >
           <img src={lojaIcon} alt="" />
           <span>Loja</span>
         </a>
 
 
         {/* SOBRE */}
-<a
-  href="#about"
-  onClick={(e) => {
-    e.preventDefault();
 
-    setPagina("home");
-
-    setTimeout(() => {
-      document.getElementById("about")?.scrollIntoView({
-        behavior: "smooth",
-      });
-    }, 100);
-  }}
->
-  <img src={sobreIcon} alt="" />
-  <span>Sobre Nós</span>
-</a>
+        <a
+          href="#about"
+          onClick={(e) => {
+            e.preventDefault();
+            irParaSecao("about");
+          }}
+        >
+          <img src={sobreIcon} alt="" />
+          <span>Sobre Nós</span>
+        </a>
 
 
-{/* CONTATO */}
-<a
-  href="#contact"
-  onClick={(e) => {
-    e.preventDefault();
+        {/* CONTATO */}
 
-    setPagina("home");
-
-    setTimeout(() => {
-      document.getElementById("contact")?.scrollIntoView({
-        behavior: "smooth",
-      });
-    }, 100);
-  }}
->
-  <img src={contatoIcon} alt="" />
-  <span>Contato</span>
-</a>
+        <a
+          href="#contact"
+          onClick={(e) => {
+            e.preventDefault();
+            irParaSecao("contact");
+          }}
+        >
+          <img src={contatoIcon} alt="" />
+          <span>Contato</span>
+        </a>
 
       </nav>
 
@@ -139,19 +152,30 @@ function Header({ setPagina }) {
 
       <div className="header-icons">
 
-      <a href="#" title="Carrinho"
-       onClick={() => setPagina("carrinho")}
+        <a
+          href="#"
+          title="Carrinho"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("carrinho");
+          }}
         >
-        <img src={carrinhoIcon} alt="Carrinho" />
-      </a>
+          <img src={carrinhoIcon} alt="Carrinho" />
+        </a>
 
-      <a href="#" title="Perfil"
-        onClick={() => setPagina("perfil")}
+
+        <a
+          href="#"
+          title="Perfil"
+          onClick={(e) => {
+            e.preventDefault();
+            setPagina("perfil");
+          }}
         >
-         <img src={perfilIcon} alt="Perfil" />
-       </a>
+          <img src={perfilIcon} alt="Perfil" />
+        </a>
 
-</div>
+      </div>
 
 
       {/* =====================================================

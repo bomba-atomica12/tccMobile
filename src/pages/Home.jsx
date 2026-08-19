@@ -1,4 +1,5 @@
 import "./Home.css";
+import { useEffect, useState } from "react";
 
 // Imagens
 import limpezaDePele from "../assets/imagens/limpeza-de-pele.png";
@@ -10,6 +11,32 @@ import reconstrucao from "../assets/imagens/reconstrucao.jpeg";
 import reparacao from "../assets/imagens/reparacao.jpeg";
 
 function Home() {
+  useEffect(() => {
+  const rolarParaSecao = () => {
+    const id = window.location.hash.replace("#", "");
+
+    if (!id) return;
+
+    setTimeout(() => {
+      const elemento = document.getElementById(id);
+
+      if (elemento) {
+        elemento.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 150);
+  };
+
+  rolarParaSecao();
+
+  window.addEventListener("hashchange", rolarParaSecao);
+
+  return () => {
+    window.removeEventListener("hashchange", rolarParaSecao);
+  };
+}, []);
   return (
     <main className="home-page">
 

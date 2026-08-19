@@ -3,18 +3,58 @@ import "./MenuMobile.css";
 import carrinhoIcon from "../assets/icones/carrinho.png";
 import perfilIcon from "../assets/icones/perfil_vaziu.png";
 
+
 function MenuMobile({ setPagina, fecharMenu }) {
 
-  // Função para fechar o menu depois de clicar
+  // =====================================================
+  // NAVEGAÇÃO NORMAL
+  // =====================================================
+
   const navegar = (pagina) => {
     setPagina(pagina);
     fecharMenu();
   };
 
+
+  // =====================================================
+  // NAVEGAR PARA UMA SEÇÃO DA HOME
+  // =====================================================
+
+  const irParaSecao = (secao) => {
+
+    // Primeiro vai para a Home
+    setPagina("home");
+
+    // Fecha o menu mobile
+    fecharMenu();
+
+    // Espera a Home aparecer
+    setTimeout(() => {
+
+      const elemento =
+        document.getElementById(secao);
+
+      if (elemento) {
+
+        elemento.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+
+      }
+
+    }, 300);
+  };
+
+
   return (
     <nav className="menu-mobile">
 
-      {/* HOME */}
+
+      {/* =====================================================
+          HOME
+      ===================================================== */}
+
       <a
         href="#"
         onClick={(e) => {
@@ -22,12 +62,20 @@ function MenuMobile({ setPagina, fecharMenu }) {
           navegar("home");
         }}
       >
-        <span className="menu-emoji">🏠</span>
-        <span>Home</span>
+        <span className="menu-emoji">
+          🏠
+        </span>
+
+        <span>
+          Home
+        </span>
       </a>
 
 
-      {/* PROCEDIMENTOS */}
+      {/* =====================================================
+          PROCEDIMENTOS
+      ===================================================== */}
+
       <a
         href="#"
         onClick={(e) => {
@@ -36,17 +84,24 @@ function MenuMobile({ setPagina, fecharMenu }) {
         }}
       >
         <span className="menu-icon-img">
+
           <img
             src={carrinhoIcon}
             alt="Procedimentos"
           />
+
         </span>
 
-        <span>Procedimentos</span>
+        <span>
+          Procedimentos
+        </span>
       </a>
 
 
-      {/* AGENDAMENTOS */}
+      {/* =====================================================
+          AGENDAMENTOS
+      ===================================================== */}
+
       <a
         href="#"
         onClick={(e) => {
@@ -54,38 +109,62 @@ function MenuMobile({ setPagina, fecharMenu }) {
           navegar("agendamento");
         }}
       >
-        <span className="menu-emoji">📅</span>
-        <span>Agendamentos</span>
+        <span className="menu-emoji">
+          📅
+        </span>
+
+        <span>
+          Agendamentos
+        </span>
       </a>
 
 
-      {/* LOJA */}
+      {/* =====================================================
+          LOJA
+      ===================================================== */}
+
       <a
         href="#"
         onClick={(e) => {
           e.preventDefault();
-          navegar("loja");
+          navegar("produtos");
         }}
       >
-        <span className="menu-emoji">🛍️</span>
-        <span>Loja</span>
+        <span className="menu-emoji">
+          🛍️
+        </span>
+
+        <span>
+          Loja
+        </span>
       </a>
 
 
-      {/* SOBRE NÓS */}
+      {/* =====================================================
+          SOBRE NÓS
+      ===================================================== */}
+
       <a
-        href="#"
+        href="#about"
         onClick={(e) => {
           e.preventDefault();
-          navegar("sobre");
+          irParaSecao("about");
         }}
       >
-        <span className="menu-emoji">ℹ️</span>
-        <span>Sobre Nós</span>
+        <span className="menu-emoji">
+          ℹ️
+        </span>
+
+        <span>
+          Sobre Nós
+        </span>
       </a>
 
 
-      {/* PERFIL */}
+      {/* =====================================================
+          PERFIL
+      ===================================================== */}
+
       <a
         href="#"
         onClick={(e) => {
@@ -94,30 +173,44 @@ function MenuMobile({ setPagina, fecharMenu }) {
         }}
       >
         <span className="menu-icon-img">
+
           <img
             src={perfilIcon}
             alt="Perfil"
           />
+
         </span>
 
-        <span>Perfil</span>
+        <span>
+          Perfil
+        </span>
       </a>
 
 
-      {/* CONTATO */}
+      {/* =====================================================
+          CONTATO
+      ===================================================== */}
+
       <a
-        href="#"
+        href="#contact"
         onClick={(e) => {
           e.preventDefault();
-          navegar("contato");
+          irParaSecao("contact");
         }}
       >
-        <span className="menu-emoji">☎️</span>
-        <span>Contato</span>
+        <span className="menu-emoji">
+          ☎️
+        </span>
+
+        <span>
+          Contato
+        </span>
       </a>
+
 
     </nav>
   );
 }
+
 
 export default MenuMobile;
