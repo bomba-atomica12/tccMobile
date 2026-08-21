@@ -4,7 +4,9 @@ import Home from "./pages/Home";
 import Perfil from "./pages/Perfil";
 import EditarPerfil from "./pages/EditarPerfil";
 import TrocarSenha from "./pages/TrocarSenha";
+import Agenda from "./pages/Agenda";
 import Agendamento from "./pages/Agendamento";
+import Procedimentos from "./pages/Procedimentos";
 import Produtos from "./pages/Produtos";
 import Carrinho from "./pages/Carrinho";
 import Cadastro from "./pages/Cadastro";
@@ -13,7 +15,7 @@ import Login from "./pages/Login";
 import Header from "./components/Header";
 
 function App() {
-  const [pagina, setPagina] = useState("perfil");
+  const [pagina, setPagina] = useState("home");
 
   return (
     <>
@@ -37,8 +39,16 @@ function App() {
         <TrocarSenha setPagina={setPagina} />
       )}
 
+      {pagina === "agenda" && (
+        <Agenda setPagina={setPagina} />
+      )}
+
       {pagina === "agendamento" && (
         <Agendamento setPagina={setPagina} />
+      )}
+
+      {pagina === "procedimentos" && (
+       <Procedimentos setPagina={setPagina} />
       )}
 
       {pagina === "produtos" && (

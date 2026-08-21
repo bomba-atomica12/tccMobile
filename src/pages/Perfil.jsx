@@ -65,61 +65,63 @@ function Perfil({ setPagina }) {
 
       <section className="acesso-rapido">
 
-        <div className="cards-rapidos">
+  <div className="quick-card">
 
-          {/* FAVORITOS */}
+    {/* FAVORITOS */}
 
-          <button className="card-rapido">
+    <button className="card-rapido">
 
-            <div className="icone-rapido">
+      <div className="icone-rapido">
 
-              <i className="fa-regular fa-heart"></i>
+        <i className="fa-regular fa-heart"></i>
 
-            </div>
+      </div>
 
-            <div>
+      <div>
 
-              <h3>
-                Favoritos
-              </h3>
+        <h3>
+          Favoritos
+        </h3>
 
-              <p>
-                Seus procedimentos favoritos salvos
-              </p>
+        <p>
+          Seus procedimentos favoritos salvos
+        </p>
 
-            </div>
+      </div>
 
-          </button>
+    </button>
 
 
-          {/* AGENDAMENTOS */}
+    {/* AGENDAMENTOS */}
 
-          <button className="card-rapido">
+    <button
+      className="card-rapido"
+      onClick={() => setPagina("agenda")}
+    >
 
-            <div className="icone-rapido">
+      <div className="icone-rapido">
 
-              <i className="fa-regular fa-calendar"></i>
+        <i className="fa-regular fa-calendar"></i>
 
-            </div>
+      </div>
 
-            <div>
+      <div>
 
-              <h3>
-                Agendamentos
-              </h3>
+        <h3>
+          Agendamentos
+        </h3>
 
-              <p>
-                Veja e gerencie seus agendamentos
-              </p>
+        <p>
+          Veja e gerencie seus agendamentos
+        </p>
 
-            </div>
+      </div>
 
-          </button>
+    </button>
 
-        </div>
+  </div>
 
-      </section>
-
+</section>
 
       {/* =========================================
           OPÇÕES DO PERFIL

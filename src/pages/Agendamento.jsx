@@ -1,44 +1,84 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Agendamento.css";
 
-function Agendamento() {
-  // ==============================
+function Agendamento({ setPagina }) {
+
+  // =========================================================
+  // DADOS DO PROCEDIMENTO ESCOLHIDO
+  // =========================================================
+
+  const [agendamentoDetalhes, setAgendamentoDetalhes] =
+    useState(null);
+
+
+  // =========================================================
   // ESTADOS
-  // ==============================
+  // =========================================================
 
-  const [dataSelecionada, setDataSelecionada] = useState(null);
-  const [horarioSelecionado, setHorarioSelecionado] = useState(null);
-  const [servicoSelecionado, setServicoSelecionado] = useState("");
-  const [mensagem, setMensagem] = useState("");
+  const [dataSelecionada, setDataSelecionada] =
+    useState(null);
 
-  // ==============================
-  // SERVIÇOS
-  // ==============================
+  const [horarioSelecionado, setHorarioSelecionado] =
+    useState(null);
 
-  const servicos = [
-    "Limpeza de pele",
-    "Design de sobrancelhas",
-    "Depilação",
-    "Metal Detox",
-    "Reconstrução",
-    "Reparação",
-  ];
+  const [nome, setNome] =
+    useState("");
 
-  // ==============================
-  // HORÁRIOS
-  // ==============================
-  // Os horários são organizados por:
-  //
-  // procedimento
-  //     ↓
-  //   dia
-  //     ↓
-  // horários disponíveis
-  //
-  // Por enquanto são dados de teste.
-  // Depois podemos buscar isso do Supabase.
+  const [email, setEmail] =
+    useState("");
+
+  const [telefone, setTelefone] =
+    useState("");
+
+  const [mensagem, setMensagem] =
+    useState("");
+
+  const [erroEmail, setErroEmail] =
+    useState("");
+
+  const [erroTelefone, setErroTelefone] =
+    useState("");
+
+
+  // =========================================================
+  // CARREGAR PROCEDIMENTO ESCOLHIDO
+  // =========================================================
+
+  useEffect(() => {
+
+    try {
+
+      const dados =
+        JSON.parse(
+          sessionStorage.getItem(
+            "agendamentoDetalhes"
+          )
+        );
+
+      if (dados) {
+
+        setAgendamentoDetalhes(dados);
+
+      }
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao carregar procedimento:",
+        erro
+      );
+
+    }
+
+  }, []);
+
+
+  // =========================================================
+  // HORÁRIOS DISPONÍVEIS
+  // =========================================================
 
   const horarios = {
+
     "Limpeza de pele": {
       3: ["08:00", "09:30", "14:00"],
       4: ["09:00", "10:00", "15:00"],
@@ -182,184 +222,749 @@ function Agendamento() {
       28: ["08:30", "13:00", "15:30"],
       31: ["09:30", "14:30"],
     },
+
   };
 
-  // ==============================
-  // CALENDÁRIO
-  // ==============================
+
+  // =========================================================
+  // CALENDÁRIO - AGOSTO 2026
+  // =========================================================
 
   const dias = Array.from(
     { length: 31 },
     (_, index) => index + 1
   );
 
-  // Agosto de 2026 começa em um sábado.
-  // 0 = Domingo
-  // 1 = Segunda
-  // ...
-  // 6 = Sábado
   const primeiroDiaDaSemana = 6;
 
-  // Espaços vazios antes do dia 1
   const espacosVazios = Array.from(
     { length: primeiroDiaDaSemana },
     (_, index) => index
   );
 
-  // ==============================
-  // VERIFICA SE O DIA TEM HORÁRIO
-  // ==============================
+
+  // =========================================================
+  // VERIFICAR SE O DIA TEM HORÁRIO
+  // =========================================================
 
   function diaTemHorario(dia) {
-    if (!servicoSelecionado) {
+
+    if (!agendamentoDetalhes) {
       return false;
     }
 
+    const procedimento =
+      agendamentoDetalhes.variante ||
+      agendamentoDetalhes.procedimento;
+
     return (
-      horarios[servicoSelecionado]?.[dia]?.length > 0
+      horarios[procedimento]?.[dia]?.length > 0
     );
   }
 
-  // ==============================
+
+  // =========================================================
   // HORÁRIOS DISPONÍVEIS
-  // ==============================
+  // =========================================================
+
+  const procedimentoParaHorario =
+    agendamentoDetalhes?.variante ||
+    agendamentoDetalhes?.procedimento;
 
   const horariosDisponiveis =
-    servicoSelecionado && dataSelecionada
-      ? horarios[servicoSelecionado]?.[dataSelecionada] || []
+    procedimentoParaHorario &&
+    dataSelecionada
+      ? horarios[
+          procedimentoParaHorario
+        ]?.[dataSelecionada] || []
       : [];
 
-  // ==============================
-  // CONFIRMAR AGENDAMENTO
-  // ==============================
 
-  function confirmarAgendamento() {
-    if (!servicoSelecionado) {
-      setMensagem("Selecione um procedimento.");
-      return;
+  // =========================================================
+  // VALIDAR EMAIL
+  // =========================================================
+
+  function validarEmail(valor) {
+
+    const regex =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!valor) {
+
+      setErroEmail(
+        "Digite seu e-mail."
+      );
+
+      return false;
     }
 
-    if (!dataSelecionada) {
-      setMensagem("Selecione uma data.");
-      return;
+    if (!regex.test(valor)) {
+
+      setErroEmail(
+        "Digite um e-mail válido."
+      );
+
+      return false;
     }
 
-    if (!horarioSelecionado) {
-      setMensagem("Selecione um horário.");
-      return;
-    }
+    setErroEmail("");
 
-    setMensagem(
-      `Agendamento selecionado: ${servicoSelecionado}, dia ${dataSelecionada}/08/2026 às ${horarioSelecionado}.`
-    );
+    return true;
   }
 
-  // ==============================
-  // RETORNO DA TELA
-  // ==============================
+
+  // =========================================================
+  // ALTERAR EMAIL
+  // =========================================================
+  // TRAVA:
+  // - Não permite espaços
+  // - Não permite caracteres inválidos
+  // - Permite somente caracteres comuns de e-mail
+  // =========================================================
+
+  function handleEmailChange(e) {
+
+    let valor =
+      e.target.value;
+
+    // Remove espaços
+    valor =
+      valor.replace(/\s/g, "");
+
+    // Permite somente caracteres válidos
+    // para um endereço de e-mail
+    valor =
+      valor.replace(
+        /[^a-zA-Z0-9@._%+-]/g,
+        ""
+      );
+
+    // Permite somente UM @
+    const partes =
+      valor.split("@");
+
+    if (partes.length > 2) {
+
+      valor =
+        partes[0] +
+        "@" +
+        partes.slice(1).join("");
+
+    }
+
+    // Limite de caracteres
+    valor =
+      valor.substring(0, 100);
+
+    setEmail(valor);
+
+    // Validação visual enquanto digita
+    if (!valor) {
+
+      setErroEmail("");
+
+      return;
+    }
+
+    const regex =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!regex.test(valor)) {
+
+      setErroEmail(
+        "Digite um e-mail válido."
+      );
+
+    } else {
+
+      setErroEmail("");
+
+    }
+
+  }
+
+
+  // =========================================================
+  // ALTERAR TELEFONE
+  // =========================================================
+  // TRAVA:
+  // - Somente números
+  // - Máximo de 11 números
+  // - Formatação automática
+  // =========================================================
+
+  function handleTelefoneChange(e) {
+
+    // Pega somente os números
+    let valor =
+      e.target.value.replace(/\D/g, "");
+
+    // TRAVA: máximo 11 números
+    valor =
+      valor.substring(0, 11);
+
+    // Formatação
+    if (valor.length <= 2) {
+
+      valor =
+        valor.replace(
+          /(\d{0,2})/,
+          "($1"
+        );
+
+    } else if (valor.length <= 7) {
+
+      valor =
+        valor.replace(
+          /(\d{2})(\d{0,5})/,
+          "($1) $2"
+        );
+
+    } else {
+
+      valor =
+        valor.replace(
+          /(\d{2})(\d{5})(\d{0,4})/,
+          "($1) $2-$3"
+        );
+
+    }
+
+    setTelefone(valor);
+
+    const numeros =
+      valor.replace(/\D/g, "");
+
+    if (
+      numeros.length > 0 &&
+      numeros.length < 11
+    ) {
+
+      setErroTelefone(
+        "Digite um telefone válido."
+      );
+
+    } else {
+
+      setErroTelefone("");
+
+    }
+
+  }
+
+
+  // =========================================================
+  // VALIDAR TELEFONE
+  // =========================================================
+
+  function validarTelefone() {
+
+    const numeros =
+      telefone.replace(/\D/g, "");
+
+    if (!numeros) {
+
+      setErroTelefone(
+        "Digite seu telefone."
+      );
+
+      return false;
+    }
+
+    if (numeros.length !== 11) {
+
+      setErroTelefone(
+        "Digite um telefone válido."
+      );
+
+      return false;
+    }
+
+    setErroTelefone("");
+
+    return true;
+  }
+
+
+  // =========================================================
+  // CONFIRMAR AGENDAMENTO
+  // =========================================================
+
+  function confirmarAgendamento() {
+
+    setMensagem("");
+
+
+    // =======================================================
+    // VERIFICAR PROCEDIMENTO
+    // =======================================================
+
+    if (!agendamentoDetalhes) {
+
+      setMensagem(
+        "Nenhum procedimento foi selecionado."
+      );
+
+      return;
+    }
+
+
+    // =======================================================
+    // VERIFICAR NOME
+    // =======================================================
+
+    if (!nome.trim()) {
+
+      setMensagem(
+        "Digite seu nome."
+      );
+
+      return;
+    }
+
+
+    // =======================================================
+    // VERIFICAR EMAIL
+    // =======================================================
+
+    if (!validarEmail(email)) {
+      return;
+    }
+
+
+    // =======================================================
+    // VERIFICAR TELEFONE
+    // =======================================================
+
+    if (!validarTelefone()) {
+      return;
+    }
+
+
+    // =======================================================
+    // VERIFICAR DATA
+    // =======================================================
+
+    if (!dataSelecionada) {
+
+      setMensagem(
+        "Selecione uma data."
+      );
+
+      return;
+    }
+
+
+    // =======================================================
+    // VERIFICAR HORÁRIO
+    // =======================================================
+
+    if (!horarioSelecionado) {
+
+      setMensagem(
+        "Selecione um horário."
+      );
+
+      return;
+    }
+
+
+    // =======================================================
+    // CRIAR DATA
+    // =======================================================
+
+    const data =
+      `2026-08-${String(
+        dataSelecionada
+      ).padStart(2, "0")}`;
+
+
+    // =======================================================
+    // CRIAR AGENDAMENTO
+    // =======================================================
+
+    const novoAgendamento = {
+
+      id: Date.now(),
+
+      nome:
+        nome.trim(),
+
+      email:
+        email.trim(),
+
+      phone:
+        telefone,
+
+      procedimento:
+        agendamentoDetalhes.procedimento,
+
+      categoria:
+        agendamentoDetalhes.categoria,
+
+      variante:
+        agendamentoDetalhes.variante,
+
+      valor:
+        agendamentoDetalhes.valor,
+
+      duracao:
+        agendamentoDetalhes.duracao,
+
+      retoque:
+        agendamentoDetalhes.retoque,
+
+      profissional:
+        agendamentoDetalhes.profissional,
+
+      data:
+        data,
+
+      horario:
+        horarioSelecionado,
+
+      status:
+        "pending"
+
+    };
+
+
+    // =======================================================
+    // PEGAR AGENDAMENTOS EXISTENTES
+    // =======================================================
+
+    let agendamentosExistentes = [];
+
+    try {
+
+      agendamentosExistentes =
+        JSON.parse(
+          localStorage.getItem(
+            "agendamentos"
+          )
+        ) || [];
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao carregar agendamentos:",
+        erro
+      );
+
+      agendamentosExistentes = [];
+
+    }
+
+
+    // =======================================================
+    // ADICIONAR O NOVO AGENDAMENTO
+    // =======================================================
+
+    const listaAtualizada = [
+
+      ...agendamentosExistentes,
+
+      novoAgendamento
+
+    ];
+
+
+    // =======================================================
+    // SALVAR NO LOCALSTORAGE
+    // =======================================================
+
+    localStorage.setItem(
+      "agendamentos",
+      JSON.stringify(
+        listaAtualizada
+      )
+    );
+
+
+    // =======================================================
+    // CONFIRMAÇÃO
+    // =======================================================
+
+    setMensagem(
+      "Agendamento realizado com sucesso!"
+    );
+
+
+    // =======================================================
+    // LIMPAR PROCEDIMENTO TEMPORÁRIO
+    // =======================================================
+
+    sessionStorage.removeItem(
+      "agendamentoDetalhes"
+    );
+
+
+    // =======================================================
+    // IR PARA A AGENDA
+    // =======================================================
+
+    setTimeout(() => {
+
+      if (setPagina) {
+
+        // CORRIGIDO:
+        // No seu App.jsx a página se chama "agenda"
+        setPagina("agenda");
+
+      }
+
+    }, 1000);
+
+  }
+
+
+  // =========================================================
+  // RENDER
+  // =========================================================
 
   return (
+
     <main className="pagina-agendamento">
 
-      {/* CABEÇALHO */}
+
+      {/* =====================================================
+          TÍTULO
+      ===================================================== */}
 
       <div className="titulo-agendamento">
-        <h1>Novo Agendamento</h1>
+
+        <h1>
+          Novo Agendamento
+        </h1>
+
       </div>
 
 
       <div className="conteudo-agendamento">
 
-        {/* ==============================
+
+        {/* ===================================================
             COLUNA ESQUERDA
-        ============================== */}
+        =================================================== */}
 
         <aside className="coluna-informacoes">
 
-          {/* INFORMAÇÕES */}
+
+          {/* =================================================
+              INFORMAÇÕES
+          ================================================= */}
 
           <section className="informacoes">
 
-            <h2>Informações</h2>
+            <h2>
+              Informações
+            </h2>
 
-            {/* Nome */}
+
+            {/* NOME */}
 
             <div className="campo">
 
-              <label>Nome Cliente:</label>
+              <label>
+                Nome Cliente:
+              </label>
 
               <input
                 type="text"
                 placeholder="Digite seu nome"
+                value={nome}
+                onChange={(e) =>
+                  setNome(e.target.value)
+                }
               />
 
             </div>
 
 
-            {/* Email */}
+            {/* EMAIL */}
 
             <div className="campo">
 
-              <label>Email:</label>
+              <label>
+                Email:
+              </label>
 
               <input
                 type="email"
                 placeholder="ex: exemplo@gmail.com"
+                value={email}
+                onChange={handleEmailChange}
+                onBlur={() =>
+                  email &&
+                  validarEmail(email)
+                }
+                maxLength={100}
+                autoComplete="email"
               />
+
+              {erroEmail && (
+
+                <small
+                  className="erro-campo"
+                  style={{
+                    color: "#b94b65",
+                    display: "block",
+                    marginTop: "5px"
+                  }}
+                >
+                  {erroEmail}
+                </small>
+
+              )}
 
             </div>
 
 
-            {/* Telefone */}
+            {/* TELEFONE */}
 
             <div className="campo">
 
-              <label>Telefone:</label>
+              <label>
+                Telefone:
+              </label>
 
               <input
                 type="tel"
+                inputMode="numeric"
                 placeholder="ex: (11) 99999-9999"
+                value={telefone}
+                onChange={
+                  handleTelefoneChange
+                }
+                onBlur={() =>
+                  telefone &&
+                  validarTelefone()
+                }
+                maxLength={15}
+                autoComplete="tel"
               />
 
+              {erroTelefone && (
+
+                <small
+                  className="erro-campo"
+                  style={{
+                    color: "#b94b65",
+                    display: "block",
+                    marginTop: "5px"
+                  }}
+                >
+                  {erroTelefone}
+                </small>
+
+              )}
+
             </div>
+
           </section>
 
 
-          {/* ==============================
+          {/* =================================================
               DETALHES
-          ============================== */}
+          ================================================= */}
 
           <section className="detalhes-agendamento">
 
-            <h2>Detalhes</h2>
+            <h2>
+              Detalhes
+            </h2>
+
 
             <p>
-              <strong>Procedimento:</strong>{" "}
-              {servicoSelecionado || "—"}
+
+              <strong>
+                Procedimento:
+              </strong>{" "}
+
+              {agendamentoDetalhes
+                ?.procedimento || "—"}
+
             </p>
 
+
+            {/* OPÇÃO */}
+
+            {agendamentoDetalhes?.variante && (
+
+              <p>
+
+                <strong>
+                  Opção:
+                </strong>{" "}
+
+                {agendamentoDetalhes.variante}
+
+              </p>
+
+            )}
+
+
             <p>
-              <strong>Data:</strong>{" "}
+
+              <strong>
+                Data:
+              </strong>{" "}
+
               {dataSelecionada
-                ? `${dataSelecionada}/08/2026`
+
+                ? `${String(
+                    dataSelecionada
+                  ).padStart(2, "0")}/08/2026`
+
                 : "—"}
+
             </p>
 
+
             <p>
-              <strong>Horário:</strong>{" "}
+
+              <strong>
+                Horário:
+              </strong>{" "}
+
               {horarioSelecionado || "—"}
+
             </p>
 
-            <p>
-              <strong>Duração:</strong> —
-            </p>
 
             <p>
-              <strong>Valor:</strong> —
+
+              <strong>
+                Duração:
+              </strong>{" "}
+
+              {agendamentoDetalhes
+                ?.duracao || "—"}
+
             </p>
 
+
             <p>
-              <strong>Profissional:</strong> —
+
+              <strong>
+                Valor:
+              </strong>{" "}
+
+              {agendamentoDetalhes
+                ?.valor || "—"}
+
+            </p>
+
+
+            <p>
+
+              <strong>
+                Profissional:
+              </strong>{" "}
+
+              {agendamentoDetalhes
+                ?.profissional || "—"}
+
             </p>
 
           </section>
@@ -367,20 +972,24 @@ function Agendamento() {
         </aside>
 
 
-        {/* ==============================
+        {/* ===================================================
             COLUNA DIREITA
-        ============================== */}
+        =================================================== */}
 
         <section className="area-agendamento">
 
-          <h2>Selecione uma Data</h2>
+
+          <h2>
+            Selecione uma Data
+          </h2>
 
 
-          {/* ==============================
+          {/* =================================================
               CALENDÁRIO
-          ============================== */}
+          ================================================= */}
 
           <div className="calendario">
+
 
             <div className="mes">
               Agosto 2026
@@ -406,28 +1015,33 @@ function Agendamento() {
 
             <div className="dias">
 
-              {/* Espaços antes do dia 1 */}
 
-              {espacosVazios.map((espaco) => (
+              {/* ESPAÇOS */}
 
-                <span
-                  key={`vazio-${espaco}`}
-                ></span>
+              {espacosVazios.map(
+                (espaco) => (
 
-              ))}
+                  <span
+                    key={`vazio-${espaco}`}
+                  ></span>
+
+                )
+              )}
 
 
-              {/* Dias do mês */}
+              {/* DIAS */}
 
               {dias.map((dia) => {
 
                 const disponivel =
                   diaTemHorario(dia);
 
+
                 return (
 
                   <button
                     key={dia}
+                    type="button"
                     className={`
                       dia
                       ${
@@ -437,18 +1051,20 @@ function Agendamento() {
                       }
                       ${
                         !disponivel &&
-                        servicoSelecionado
+                        agendamentoDetalhes
                           ? "indisponivel"
                           : ""
                       }
                     `}
                     disabled={
-                      servicoSelecionado &&
+                      agendamentoDetalhes &&
                       !disponivel
                     }
                     onClick={() => {
 
-                      setDataSelecionada(dia);
+                      setDataSelecionada(
+                        dia
+                      );
 
                       setHorarioSelecionado(
                         null
@@ -458,10 +1074,13 @@ function Agendamento() {
 
                     }}
                   >
+
                     {dia}
+
                   </button>
 
                 );
+
               })}
 
             </div>
@@ -469,41 +1088,53 @@ function Agendamento() {
           </div>
 
 
-          {/* ==============================
+          {/* =================================================
               HORÁRIOS
-          ============================== */}
+          ================================================= */}
 
           <div className="area-horarios">
 
-            <h2>Horários Disponíveis</h2>
+
+            <h2>
+              Horários Disponíveis
+            </h2>
 
 
-            {/* Nenhum procedimento ou data */}
+            {/* SEM PROCEDIMENTO */}
 
-            {!servicoSelecionado ||
-            !dataSelecionada ? (
+            {!agendamentoDetalhes ? (
 
               <p className="aviso-horario">
 
-                Selecione um procedimento e uma
-                data para ver os horários disponíveis.
+                Nenhum procedimento foi
+                selecionado.
+
+                <br />
+
+                Volte para a tela de
+                procedimentos e escolha um.
+
+              </p>
+
+            ) : !dataSelecionada ? (
+
+              <p className="aviso-horario">
+
+                Selecione uma data para
+                ver os horários disponíveis.
 
               </p>
 
             ) : horariosDisponiveis.length === 0 ? (
 
-              /* Sem horários */
-
               <p className="aviso-horario">
 
-                Não há horários disponíveis para
-                esta data e procedimento.
+                Não há horários disponíveis
+                para esta data.
 
               </p>
 
             ) : (
-
-              /* Horários */
 
               <div className="horarios">
 
@@ -512,10 +1143,13 @@ function Agendamento() {
 
                     <button
                       key={horario}
+                      type="button"
                       className={
                         horarioSelecionado ===
                         horario
+
                           ? "horario selecionado"
+
                           : "horario"
                       }
                       onClick={() => {
@@ -528,7 +1162,9 @@ function Agendamento() {
 
                       }}
                     >
+
                       {horario}
+
                     </button>
 
                   )
@@ -541,28 +1177,45 @@ function Agendamento() {
           </div>
 
 
-          {/* ==============================
+          {/* =================================================
               MENSAGEM
-          ============================== */}
+          ================================================= */}
 
           {mensagem && (
 
-            <p className="mensagem-agendamento">
+            <p
+              className="mensagem-agendamento"
+              style={{
+                color:
+                  mensagem.includes(
+                    "sucesso"
+                  )
+                    ? "#4f8a61"
+                    : "#b94b65"
+              }}
+            >
+
               {mensagem}
+
             </p>
 
           )}
 
 
-          {/* ==============================
+          {/* =================================================
               BOTÃO
-          ============================== */}
+          ================================================= */}
 
           <button
+            type="button"
             className="botao-confirmar"
-            onClick={confirmarAgendamento}
+            onClick={
+              confirmarAgendamento
+            }
           >
+
             Confirmar Agendamento
+
           </button>
 
         </section>
@@ -570,7 +1223,9 @@ function Agendamento() {
       </div>
 
     </main>
+
   );
+
 }
 
 export default Agendamento;
