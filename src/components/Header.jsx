@@ -163,17 +163,16 @@ function Header({ setPagina }) {
           <img src={carrinhoIcon} alt="Carrinho" />
         </a>
 
-
-        <a
-          href="#"
-          title="Perfil"
-          onClick={(e) => {
-            e.preventDefault();
-            setPagina("perfil");
-          }}
-        >
-          <img src={perfilIcon} alt="Perfil" />
-        </a>
+    <a
+      href="#"
+      title="Entrar"
+      onClick={(e) => {
+        e.preventDefault();
+        setPagina("login");
+     }}
+    >
+      <img src={perfilIcon} alt="Entrar" />
+    </a>
 
       </div>
 

@@ -1,5 +1,5 @@
 /* ========================================
-   PÁGINA
+   RESET
 ======================================== */
 
 .pagina-perfil {
@@ -7,7 +7,7 @@
 
   background-color: #faf7f8;
 
-  padding: 18px 15px 35px;
+  padding: 95px 15px 35px;
 
   color: #333;
 }
@@ -22,6 +22,8 @@
 
   background-color: #ffffff;
 
+  border: 1px solid #eee2e7;
+
   border-radius: 18px;
 
   padding: 22px 18px;
@@ -34,9 +36,10 @@
 
   text-align: center;
 
+  gap: 16px;
+
   box-shadow:
-    0 4px 15px
-    rgba(102, 4, 42, 0.07);
+    0 4px 15px rgba(102, 4, 42, 0.07);
 }
 
 
@@ -45,63 +48,25 @@
 ======================================== */
 
 .foto-container {
-  position: relative;
-
   width: 105px;
 
   height: 105px;
 
-  margin-bottom: 14px;
+  flex-shrink: 0;
 }
 
 
 .foto-perfil {
   width: 100%;
-
   height: 100%;
 
-  object-fit: cover;
+  object-fit: contain;
 
   border-radius: 50%;
 
   border: 4px solid #f4e1e8;
-}
 
-
-/* Botão da foto */
-
-.botao-editar-foto {
-  position: absolute;
-
-  right: 0;
-
-  bottom: 2px;
-
-  width: 31px;
-
-  height: 31px;
-
-  border: none;
-
-  border-radius: 50%;
-
-  background-color: #66042a;
-
-  color: #ffffff;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  font-size: 12px;
-
-  cursor: pointer;
-
-  box-shadow:
-    0 3px 8px
-    rgba(0, 0, 0, 0.18);
+  background-color: #f9edef;
 }
 
 
@@ -110,7 +75,8 @@
 ======================================== */
 
 .informacoes-perfil h1 {
-  margin: 0;
+
+  margin: 0 0 6px;
 
   color: #66042a;
 
@@ -126,7 +92,8 @@
 
 
 .email-perfil {
-  margin: 6px 0;
+
+  margin: 0 0 8px;
 
   color: #777;
 
@@ -135,7 +102,8 @@
 
 
 .membro-desde {
-  margin: 8px 0 0;
+
+  margin: 0;
 
   color: #9a858d;
 
@@ -144,6 +112,7 @@
 
 
 .membro-desde i {
+
   margin-right: 5px;
 
   color: #66042a;
@@ -151,22 +120,22 @@
 
 
 /* ========================================
-   BOTÃO EDITAR PERFIL
+   EDITAR PERFIL
 ======================================== */
 
 .botao-editar-perfil {
-  margin-top: 17px;
+
+  width: 100%;
 
   padding: 10px 20px;
 
-  border:
-    1px solid #66042a;
+  border: 1px solid #dcb9c7;
 
   border-radius: 10px;
 
   background-color: #ffffff;
 
-  color: #66042a;
+  color: #a95f70;
 
   font-size: 13px;
 
@@ -179,12 +148,16 @@
 
 
 .botao-editar-perfil i {
+
   margin-right: 6px;
 }
 
 
 .botao-editar-perfil:hover {
-  background-color: #66042a;
+
+  background-color: #c98291;
+
+  border-color: #c98291;
 
   color: #ffffff;
 }
@@ -195,14 +168,284 @@
 ======================================== */
 
 .acesso-rapido {
-  margin-top: 18px;
+
+  margin-top: 22px;
 }
 
 
-.acesso-rapido h2,
-.opcoes-perfil h2,
+.cards-rapidos {
+
+  display: grid;
+
+  grid-template-columns: 1fr;
+
+  gap: 12px;
+}
+
+
+/* ========================================
+   CARD RÁPIDO
+======================================== */
+
+.card-rapido {
+
+  width: 100%;
+
+  min-height: 105px;
+
+  padding: 20px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 16px;
+
+  border: 1px solid #eee2e7;
+
+  border-radius: 16px;
+
+  background-color: #f9edef;
+
+  color: #333;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.card-rapido:hover {
+
+  background-color: #ffffff;
+
+  border-color: #dcb9c7;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(102, 4, 42, 0.06);
+}
+
+
+/* ========================================
+   ÍCONE DO CARD
+======================================== */
+
+.icone-rapido {
+
+  width: 52px;
+
+  height: 52px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background-color: #ffffff;
+
+  color: #c98291;
+
+  font-size: 22px;
+}
+
+
+/* ========================================
+   TEXTO DO CARD
+======================================== */
+
+.card-rapido h3 {
+
+  margin: 0 0 6px;
+
+  color: #3d3034;
+
+  font-size: 16px;
+}
+
+
+.card-rapido p {
+
+  max-width: 250px;
+
+  margin: 0;
+
+  color: #7c7074;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+
+/* ========================================
+   OPÇÕES DO PERFIL
+======================================== */
+
+.opcoes-perfil {
+
+  margin-top: 22px;
+
+  background-color: #ffffff;
+
+  border: 1px solid #eee2e7;
+
+  border-radius: 18px;
+
+  padding: 5px 15px;
+
+  box-shadow:
+    0 5px 15px rgba(102, 4, 42, 0.05);
+}
+
+
+/* ========================================
+   OPÇÃO
+======================================== */
+
+.opcao-perfil {
+
+  width: 100%;
+
+  min-height: 75px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 14px 5px;
+
+  border: none;
+
+  border-bottom: 1px solid #eee2e7;
+
+  background-color: transparent;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.opcao-perfil:last-child {
+
+  border-bottom: none;
+}
+
+
+.opcao-perfil:hover {
+
+  background-color: #faf7f8;
+}
+
+
+/* ========================================
+   ÍCONE
+======================================== */
+
+.icone-opcao {
+
+  width: 45px;
+
+  height: 45px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background-color: #f7e8ed;
+
+  color: #c98291;
+
+  font-size: 17px;
+}
+
+
+/* ========================================
+   TEXTO
+======================================== */
+
+.texto-opcao {
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.texto-opcao h3 {
+
+  margin: 0 0 5px;
+
+  color: #3d3034;
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+
+.texto-opcao p {
+
+  margin: 0;
+
+  color: #7c7074;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+}
+
+
+/* ========================================
+   SETA
+======================================== */
+
+.seta {
+
+  color: #c98291;
+
+  font-size: 12px;
+
+  margin-left: 5px;
+}
+
+
+/* ========================================
+   CONTA
+======================================== */
+
+.conta {
+
+  margin-top: 25px;
+
+  padding-bottom: 15px;
+}
+
+
 .conta h2 {
+
   margin: 0 0 12px;
+
+  padding-left: 5px;
 
   color: #66042a;
 
@@ -217,259 +460,32 @@
 }
 
 
-/* ========================================
-   CARDS RÁPIDOS
-======================================== */
-
-.cards-rapidos {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 9px;
-}
-
-
-.card-rapido {
-  width: 100%;
-
-  min-height: 70px;
-
-  padding: 13px 15px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 13px;
-
-  border:
-    1px solid #eee2e7;
-
-  border-radius: 13px;
+.opcoes-conta {
 
   background-color: #ffffff;
 
-  color: #333;
+  border: 1px solid #eee2e7;
 
-  text-align: left;
+  border-radius: 16px;
 
-  cursor: pointer;
+  padding: 5px 15px;
 
-  transition: 0.2s ease;
-}
-
-
-.card-rapido:hover {
-  border-color: #dcb9c7;
-
-  transform: translateY(-1px);
-}
-
-
-/* Ícone */
-
-.card-rapido > i {
-  width: 40px;
-
-  height: 40px;
-
-  flex-shrink: 0;
-
-  border-radius: 11px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  background-color: #f7e8ed;
-
-  color: #66042a;
-
-  font-size: 17px;
-}
-
-
-/* Card selecionado */
-
-.card-rapido.selecionado {
-  background-color: #66042a;
-
-  border-color: #66042a;
-
-  color: #ffffff;
-}
-
-
-.card-rapido.selecionado > i {
-  background-color: rgba(255, 255, 255, 0.15);
-
-  color: #ffffff;
-}
-
-
-.card-rapido h3 {
-  margin: 0 0 3px;
-
-  font-size: 14px;
-
-  color: #66042a;
-}
-
-
-.card-rapido.selecionado h3 {
-  color: #ffffff;
-}
-
-
-.card-rapido p {
-  margin: 0;
-
-  color: #8c7c82;
-
-  font-size: 11px;
-
-  line-height: 1.4;
-}
-
-
-.card-rapido.selecionado p {
-  color: #f1dfe6;
+  box-shadow:
+    0 5px 15px rgba(102, 4, 42, 0.05);
 }
 
 
 /* ========================================
-   OPÇÕES
+   ITEM DA CONTA
 ======================================== */
-
-.opcoes-perfil {
-  margin-top: 22px;
-}
-
-
-.opcao-perfil {
-  width: 100%;
-
-  min-height: 75px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  padding: 12px;
-
-  margin-bottom: 8px;
-
-  border:
-    1px solid #eee2e7;
-
-  border-radius: 13px;
-
-  background-color: #ffffff;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition: 0.2s ease;
-}
-
-
-.opcao-perfil:hover {
-  border-color: #dcb9c7;
-
-  transform: translateY(-1px);
-}
-
-
-/* Ícone da opção */
-
-.icone-opcao {
-  width: 39px;
-
-  height: 39px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  border-radius: 10px;
-
-  background-color: #f7e8ed;
-
-  color: #66042a;
-
-  font-size: 15px;
-}
-
-
-/* Texto */
-
-.texto-opcao {
-  flex: 1;
-
-  min-width: 0;
-}
-
-
-.texto-opcao h3 {
-  margin: 0 0 3px;
-
-  color: #444;
-
-  font-size: 13px;
-
-  font-weight: 600;
-}
-
-
-.texto-opcao p {
-  margin: 0;
-
-  color: #999;
-
-  font-size: 10px;
-
-  line-height: 1.35;
-}
-
-
-/* Seta */
-
-.seta {
-  color: #b7a5ac;
-
-  font-size: 12px;
-
-  margin-left: 4px;
-}
-
-
-/* ========================================
-   CONTA
-======================================== */
-
-.conta {
-  margin-top: 22px;
-
-  padding-bottom: 15px;
-}
-
 
 .item-conta {
+
   width: 100%;
 
-  min-height: 48px;
+  min-height: 50px;
 
-  padding: 0 13px;
+  padding: 0 5px;
 
   display: flex;
 
@@ -479,12 +495,7 @@
 
   border: none;
 
-  border-bottom:
-    1px solid #eee2e7;
-
   background-color: transparent;
-
-  color: #555;
 
   text-align: left;
 
@@ -493,47 +504,43 @@
 
 
 .item-conta > i:first-child {
-  width: 28px;
 
-  color: #66042a;
+  width: 25px;
+
+  color: #d76570;
+
+  font-size: 15px;
 
   text-align: center;
 }
 
 
 .item-conta span {
+
   flex: 1;
+
+  color: #d76570;
 
   font-size: 13px;
 }
 
 
 .item-conta > i:last-child {
-  color: #b7a5ac;
+
+  color: #e09ba3;
 
   font-size: 11px;
 }
 
 
-/* Sair */
-
-.item-conta.sair {
-  color: #a42b52;
-}
-
-
-.item-conta.sair > i:first-child {
-  color: #a42b52;
-}
-
-
 /* ========================================
-   TELAS MAIORES
+   RESPONSIVIDADE
 ======================================== */
 
 @media (min-width: 769px) {
 
   .pagina-perfil {
+
     max-width: 900px;
 
     margin: 0 auto;
@@ -542,55 +549,177 @@
   }
 
 
+  /* CABEÇALHO */
+
   .perfil-header {
+
     display: grid;
 
     grid-template-columns:
       auto 1fr auto;
 
+    align-items: center;
+
     text-align: left;
 
-    gap: 20px;
+    gap: 22px;
 
-    align-items: center;
+    padding: 28px;
+  }
+
+
+  .botao-editar-perfil {
+
+    width: auto;
+
+    margin-top: 0;
+  }
+
+
+  /* ACESSO RÁPIDO */
+
+  .cards-rapidos {
+
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .card-rapido {
+
+    min-height: 140px;
 
     padding: 25px;
   }
 
 
+  .icone-rapido {
+
+    width: 60px;
+
+    height: 60px;
+
+    font-size: 25px;
+  }
+
+
+  .card-rapido h3 {
+
+    font-size: 17px;
+  }
+
+
+  .card-rapido p {
+
+    font-size: 13px;
+  }
+
+}
+
+
+/* ========================================
+   CELULARES PEQUENOS
+======================================== */
+
+@media (max-width: 450px) {
+
+  .pagina-perfil {
+
+    padding-left: 12px;
+
+    padding-right: 12px;
+  }
+
+
+  .perfil-header {
+
+    border-radius: 16px;
+
+    padding: 20px 15px;
+  }
+
+
   .foto-container {
-    margin-bottom: 0;
+
+    width: 100px;
+
+    height: 100px;
   }
 
 
-  .botao-editar-perfil {
-    margin-top: 0;
-  }
+  .informacoes-perfil h1 {
 
-
-  .cards-rapidos {
-    display: grid;
-
-    grid-template-columns:
-      repeat(3, 1fr);
+    font-size: 22px;
   }
 
 
   .card-rapido {
-    flex-direction: column;
 
-    align-items: flex-start;
+    min-height: 95px;
 
-    min-height: 150px;
+    padding: 17px;
 
-    padding: 18px;
+    gap: 13px;
   }
 
 
-  .card-rapido > i {
-    width: 45px;
+  .icone-rapido {
 
-    height: 45px;
+    width: 48px;
+
+    height: 48px;
+
+    font-size: 20px;
+  }
+
+
+  .card-rapido h3 {
+
+    font-size: 15px;
+  }
+
+
+  .card-rapido p {
+
+    font-size: 11px;
+  }
+
+
+  .opcoes-perfil {
+
+    padding-left: 12px;
+
+    padding-right: 12px;
+  }
+
+
+  .opcao-perfil {
+
+    min-height: 70px;
+
+    gap: 10px;
+  }
+
+
+  .icone-opcao {
+
+    width: 42px;
+
+    height: 42px;
+
+    font-size: 16px;
+  }
+
+
+  .texto-opcao h3 {
+
+    font-size: 13px;
+  }
+
+
+  .texto-opcao p {
+
+    font-size: 10px;
   }
 
 }
