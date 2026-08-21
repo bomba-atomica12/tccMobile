@@ -20,9 +20,9 @@ Projeto desenvolvido para o TCC.
 - Carrinho de compras
 - Home, Sobre Nós e Contato
 - Agenda
+- procedimentos
 
 ## Falta
-- procedimentos
 
 ## Ideias 
 Perfil
