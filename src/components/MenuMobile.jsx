@@ -133,7 +133,7 @@ function MenuMobile({ setPagina, fecharMenu }) {
 
           e.preventDefault();
 
-          navegar("agenda");
+          navegar("agendamento");
 
         }}
       >
@@ -248,37 +248,6 @@ function MenuMobile({ setPagina, fecharMenu }) {
 
 
       {/* =====================================================
-          CARRINHO
-      ===================================================== */}
-
-      <a
-        href="#"
-        onClick={(e) => {
-
-          e.preventDefault();
-
-          navegar("carrinho");
-
-        }}
-      >
-
-        <span className="menu-icon-img">
-
-          <img
-            src={carrinhoIcon}
-            alt="Carrinho"
-          />
-
-        </span>
-
-        <span>
-          Carrinho
-        </span>
-
-      </a>
-
-
-      {/* =====================================================
           PERFIL
       ===================================================== */}
 
@@ -308,57 +277,6 @@ function MenuMobile({ setPagina, fecharMenu }) {
 
       </a>
 
-
-      {/* =====================================================
-          LOGIN
-      ===================================================== */}
-
-      <a
-        href="#"
-        onClick={(e) => {
-
-          e.preventDefault();
-
-          navegar("login");
-
-        }}
-      >
-
-        <span className="menu-emoji">
-          🔐
-        </span>
-
-        <span>
-          Login
-        </span>
-
-      </a>
-
-
-      {/* =====================================================
-          CADASTRO
-      ===================================================== */}
-
-      <a
-        href="#"
-        onClick={(e) => {
-
-          e.preventDefault();
-
-          navegar("cadastro");
-
-        }}
-      >
-
-        <span className="menu-emoji">
-          📝
-        </span>
-
-        <span>
-          Cadastro
-        </span>
-
-      </a>
 
 
     </nav>
