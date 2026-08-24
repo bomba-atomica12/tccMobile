@@ -225,22 +225,82 @@ function Agendamento({ setPagina }) {
 
   };
 
+// =========================================================
+// CALENDÁRIO - MÊS ATUAL
+// =========================================================
 
-  // =========================================================
-  // CALENDÁRIO - AGOSTO 2026
-  // =========================================================
+const hoje = new Date();
 
-  const dias = Array.from(
-    { length: 31 },
-    (_, index) => index + 1
+const anoAtual = hoje.getFullYear();
+const mesAtual = hoje.getMonth();
+
+// Quantidade de dias do mês atual
+const quantidadeDias =
+  new Date(
+    anoAtual,
+    mesAtual + 1,
+    0
+  ).getDate();
+
+const dias = Array.from(
+  { length: quantidadeDias },
+  (_, index) => index + 1
+);
+
+// Descobre em qual dia da semana começa o mês
+const primeiroDiaDaSemana =
+  new Date(
+    anoAtual,
+    mesAtual,
+    1
+  ).getDay();
+
+const espacosVazios = Array.from(
+  { length: primeiroDiaDaSemana },
+  (_, index) => index
+);
+
+// Nome do mês
+const nomeMes =
+  new Intl.DateTimeFormat(
+    "pt-BR",
+    {
+      month: "long"
+    }
+  ).format(
+    new Date(
+      anoAtual,
+      mesAtual,
+      1
+    )
   );
 
-  const primeiroDiaDaSemana = 6;
+const nomeMesFormatado =
+  nomeMes.charAt(0).toUpperCase() +
+  nomeMes.slice(1);
+  
 
-  const espacosVazios = Array.from(
-    { length: primeiroDiaDaSemana },
-    (_, index) => index
+
+  // =========================================================
+// VERIFICAR SE O DIA JÁ PASSOU
+// =========================================================
+
+function diaJaPassou(dia) {
+
+  const dataHoje = new Date(
+    anoAtual,
+    mesAtual,
+    hoje.getDate()
   );
+
+  const dataCalendario = new Date(
+    anoAtual,
+    mesAtual,
+    dia
+  );
+
+  return dataCalendario < dataHoje;
+}
 
 
   // =========================================================
@@ -316,30 +376,21 @@ function Agendamento({ setPagina }) {
   // =========================================================
   // ALTERAR EMAIL
   // =========================================================
-  // TRAVA:
-  // - Não permite espaços
-  // - Não permite caracteres inválidos
-  // - Permite somente caracteres comuns de e-mail
-  // =========================================================
 
   function handleEmailChange(e) {
 
     let valor =
       e.target.value;
 
-    // Remove espaços
     valor =
       valor.replace(/\s/g, "");
 
-    // Permite somente caracteres válidos
-    // para um endereço de e-mail
     valor =
       valor.replace(
         /[^a-zA-Z0-9@._%+-]/g,
         ""
       );
 
-    // Permite somente UM @
     const partes =
       valor.split("@");
 
@@ -352,13 +403,11 @@ function Agendamento({ setPagina }) {
 
     }
 
-    // Limite de caracteres
     valor =
       valor.substring(0, 100);
 
     setEmail(valor);
 
-    // Validação visual enquanto digita
     if (!valor) {
 
       setErroEmail("");
@@ -387,23 +436,15 @@ function Agendamento({ setPagina }) {
   // =========================================================
   // ALTERAR TELEFONE
   // =========================================================
-  // TRAVA:
-  // - Somente números
-  // - Máximo de 11 números
-  // - Formatação automática
-  // =========================================================
 
   function handleTelefoneChange(e) {
 
-    // Pega somente os números
     let valor =
       e.target.value.replace(/\D/g, "");
 
-    // TRAVA: máximo 11 números
     valor =
       valor.substring(0, 11);
 
-    // Formatação
     if (valor.length <= 2) {
 
       valor =
@@ -556,6 +597,20 @@ function Agendamento({ setPagina }) {
 
 
     // =======================================================
+    // GARANTIR QUE A DATA NÃO PASSOU
+    // =======================================================
+
+    if (diaJaPassou(dataSelecionada)) {
+
+      setMensagem(
+        "Não é possível agendar para uma data que já passou."
+      );
+
+      return;
+    }
+
+
+    // =======================================================
     // VERIFICAR HORÁRIO
     // =======================================================
 
@@ -573,11 +628,12 @@ function Agendamento({ setPagina }) {
     // CRIAR DATA
     // =======================================================
 
-    const data =
-      `2026-08-${String(
-        dataSelecionada
-      ).padStart(2, "0")}`;
-
+   const data =
+  `${anoAtual}-${String(
+    mesAtual + 1
+  ).padStart(2, "0")}-${String(
+    dataSelecionada
+  ).padStart(2, "0")}`;
 
     // =======================================================
     // CRIAR AGENDAMENTO
@@ -657,7 +713,7 @@ function Agendamento({ setPagina }) {
 
 
     // =======================================================
-    // ADICIONAR O NOVO AGENDAMENTO
+    // ADICIONAR NOVO AGENDAMENTO
     // =======================================================
 
     const listaAtualizada = [
@@ -707,8 +763,6 @@ function Agendamento({ setPagina }) {
 
       if (setPagina) {
 
-        // CORRIGIDO:
-        // No seu App.jsx a página se chama "agenda"
         setPagina("agenda");
 
       }
@@ -910,13 +964,14 @@ function Agendamento({ setPagina }) {
                 Data:
               </strong>{" "}
 
-              {dataSelecionada
+          {dataSelecionada
+              ? `${String(
+              dataSelecionada
+              ).padStart(2, "0")}/${String(
+               mesAtual + 1
+              ).padStart(2, "0")}/${anoAtual}`
 
-                ? `${String(
-                    dataSelecionada
-                  ).padStart(2, "0")}/08/2026`
-
-                : "—"}
+           : "—"}
 
             </p>
 
@@ -992,9 +1047,9 @@ function Agendamento({ setPagina }) {
 
 
             <div className="mes">
-              Agosto 2026
-            </div>
-
+           {nomeMesFormatado} {anoAtual}
+             </div>
+ 
 
             {/* DIAS DA SEMANA */}
 
@@ -1036,6 +1091,9 @@ function Agendamento({ setPagina }) {
                 const disponivel =
                   diaTemHorario(dia);
 
+                const passado =
+                  diaJaPassou(dia);
+
 
                 return (
 
@@ -1050,17 +1108,27 @@ function Agendamento({ setPagina }) {
                           : ""
                       }
                       ${
-                        !disponivel &&
-                        agendamentoDetalhes
+                        passado ||
+                        (
+                          !disponivel &&
+                          agendamentoDetalhes
+                        )
                           ? "indisponivel"
                           : ""
                       }
                     `}
                     disabled={
-                      agendamentoDetalhes &&
-                      !disponivel
+                      passado ||
+                      (
+                        agendamentoDetalhes &&
+                        !disponivel
+                      )
                     }
                     onClick={() => {
+
+                      if (passado) {
+                        return;
+                      }
 
                       setDataSelecionada(
                         dia
