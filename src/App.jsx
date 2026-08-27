@@ -28,7 +28,7 @@ function App() {
       )}
 
       {pagina === "perfil" && (
-        <Perfil setPagina={setPagina} />
+        <Login setPagina={setPagina} />
       )}
 
       {pagina === "editarPerfil" && (
