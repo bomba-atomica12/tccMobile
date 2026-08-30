@@ -1,5 +1,5 @@
+import { useEffect } from "react";
 import "./Home.css";
-import { useEffect, useState } from "react";
 
 // Imagens
 import limpezaDePele from "../assets/imagens/limpeza-de-pele.png";
@@ -10,33 +10,34 @@ import metalDetox from "../assets/imagens/metal-detox.jpeg";
 import reconstrucao from "../assets/imagens/reconstrucao.jpeg";
 import reparacao from "../assets/imagens/reparacao.jpeg";
 
-function Home() {
+function Home({ setPagina }) {
   useEffect(() => {
-  const rolarParaSecao = () => {
-    const id = window.location.hash.replace("#", "");
+    const rolarParaSecao = () => {
+      const id = window.location.hash.replace("#", "");
 
-    if (!id) return;
+      if (!id) return;
 
-    setTimeout(() => {
-      const elemento = document.getElementById(id);
+      setTimeout(() => {
+        const elemento = document.getElementById(id);
 
-      if (elemento) {
-        elemento.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }, 150);
-  };
+        if (elemento) {
+          elemento.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 150);
+    };
 
-  rolarParaSecao();
+    rolarParaSecao();
 
-  window.addEventListener("hashchange", rolarParaSecao);
+    window.addEventListener("hashchange", rolarParaSecao);
 
-  return () => {
-    window.removeEventListener("hashchange", rolarParaSecao);
-  };
-}, []);
+    return () => {
+      window.removeEventListener("hashchange", rolarParaSecao);
+    };
+  }, []);
+
   return (
     <main className="home-page">
 
@@ -70,9 +71,16 @@ function Home() {
               Conheça nossos serviços
             </a>
 
-            <a href="#" className="btn btn-outline">
-              Agendar horário
-            </a>
+           <a
+  href="#"
+  className="btn btn-outline"
+  onClick={(e) => {
+    e.preventDefault();
+    setPagina("procedimentos");
+  }}
+>
+  Agendar horário
+</a>
 
           </div>
 
@@ -164,9 +172,16 @@ function Home() {
             </div>
 
 
-            <a href="#" className="btn">
-              Agende seu horário
-            </a>
+            <a
+  href="#"
+  className="btn btn-outline"
+  onClick={(e) => {
+    e.preventDefault();
+    setPagina("procedimentos");
+  }}
+>
+  Agende seu horário
+</a>
 
           </div>
 

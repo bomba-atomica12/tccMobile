@@ -18,17 +18,10 @@ import makeSocial from "../assets/imagens/makesocial.jpg";
 import makeInfantil from "../assets/imagens/makeinfantil.jpg";
 import makeNoiva from "../assets/imagens/makenoiva.jpg";
 
-
 function Procedimentos({ setPagina }) {
 
   const [pesquisa, setPesquisa] = useState("");
-
   const [selecionados, setSelecionados] = useState({});
-
-
-  // =========================================================
-  // PROCEDIMENTOS
-  // =========================================================
 
   const categorias = [
 
@@ -224,10 +217,6 @@ function Procedimentos({ setPagina }) {
       ]
     },
 
-
-    // =======================================================
-    // CABELO
-    // =======================================================
 
     {
       nome: "Cabelo",
@@ -474,10 +463,6 @@ function Procedimentos({ setPagina }) {
     },
 
 
-    // =======================================================
-    // MAQUIAGEM
-    // =======================================================
-
     {
       nome: "Maquiagem",
 
@@ -581,11 +566,6 @@ function Procedimentos({ setPagina }) {
 
   ];
 
-
-  // =========================================================
-  // PESQUISA
-  // =========================================================
-
   const categoriasFiltradas = useMemo(() => {
 
     const texto = pesquisa.trim().toLowerCase();
@@ -635,11 +615,6 @@ function Procedimentos({ setPagina }) {
 
   }, [pesquisa]);
 
-
-  // =========================================================
-  // SELECIONAR OPÇÃO
-  // =========================================================
-
   const selecionarOpcao = (id, index) => {
 
     setSelecionados((anterior) => ({
@@ -648,11 +623,6 @@ function Procedimentos({ setPagina }) {
     }));
 
   };
-
-
-  // =========================================================
-  // AGENDAR
-  // =========================================================
 
   const agendar = (procedimento, categoria) => {
 
@@ -680,12 +650,10 @@ function Procedimentos({ setPagina }) {
 
     };
 
-
     sessionStorage.setItem(
       "agendamentoDetalhes",
       JSON.stringify(dados)
     );
-
 
     if (setPagina) {
 
@@ -695,235 +663,196 @@ function Procedimentos({ setPagina }) {
 
   };
 
+  return (
+    <>
+      <Header setPagina={setPagina} />
 
-  // =========================================================
-  // RENDER
-  // =========================================================
+      <main className="procedimentos-page">
 
-    return (
-  <>
-    <Header setPagina={setPagina} />
+        <section className="procedimentos-hero">
 
-    <main className="procedimentos-page">
+          <div className="procedimentos-intro">
 
-      {/* =====================================================
-          HERO
-      ===================================================== */}
+            <span className="section-label">
+              CUIDE DE VOCÊ
+            </span>
 
-      <section className="procedimentos-hero">
+            <h1>
+              Nossos <span>Procedimentos</span>
+            </h1>
 
-        <div className="procedimentos-intro">
+            <p>
+              Encontre o procedimento ideal para você
+              e escolha o cuidado que melhor atende
+              às suas necessidades.
+            </p>
 
-          <span className="section-label">
-            CUIDE DE VOCÊ
-          </span>
+          </div>
 
-          <h1>
-            Nossos <span>Procedimentos</span>
-          </h1>
+          <div className="search-container">
 
-          <p>
-            Encontre o procedimento ideal para você
-            e escolha o cuidado que melhor atende
-            às suas necessidades.
-          </p>
+            <span className="search-icon">
+              🔍
+            </span>
 
-        </div>
+            <input
+              className="input"
+              type="search"
+              placeholder="Pesquisar procedimento..."
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
+            />
 
-
-        {/* PESQUISA */}
-
-        <div className="search-container">
-
-          <span className="search-icon">
-            🔍
-          </span>
-
-          <input
-            className="input"
-            type="search"
-            placeholder="Pesquisar procedimento..."
-            value={pesquisa}
-            onChange={(e) => setPesquisa(e.target.value)}
-          />
-
-          {pesquisa && (
-            <button
-              className="clear-btn"
-              type="button"
-              onClick={() => setPesquisa("")}
-              aria-label="Limpar pesquisa"
-            >
-              ×
-            </button>
-          )}
-
-        </div>
-
-      </section>
-
-
-      {/* =====================================================
-          CATEGORIAS
-      ===================================================== */}
-
-      {categoriasFiltradas.map((categoria) => (
-
-        <section
-          className="categoria"
-          key={categoria.nome}
-        >
-
-          <h2 className="titulo-categoria">
-            {categoria.nome}
-          </h2>
-
-
-          <div className="container-procedimentos">
-
-            {categoria.procedimentos.map((procedimento) => {
-
-              const indice =
-                selecionados[procedimento.id] ?? 0;
-
-              const opcaoSelecionada =
-                procedimento.opcoes[indice];
-
-
-              return (
-                <div
-                  className="procedimento"
-                  key={procedimento.id}
-                >
-
-                  {/* IMAGEM */}
-
-                  <div className="imagem-procedimento">
-
-                    <img
-                      src={procedimento.imagem}
-                      alt={procedimento.nome}
-                    />
-
-                  </div>
-
-
-                  {/* CONTEÚDO */}
-
-                  <div className="conteudo-procedimento">
-
-                    <h3>
-                      {procedimento.nome}
-                    </h3>
-
-
-                    <p>
-                      {procedimento.descricao}
-                    </p>
-
-
-                    <div className="opcoes-valor">
-
-                      <label>
-                        Opções:
-                      </label>
-
-
-                      <select
-                        className="variant-select"
-                        value={indice}
-                        onChange={(e) =>
-                          selecionarOpcao(
-                            procedimento.id,
-                            e.target.value
-                          )
-                        }
-                      >
-
-                        {procedimento.opcoes.map(
-                          (opcao, index) => (
-
-                            <option
-                              key={index}
-                              value={index}
-                            >
-                              {opcao.nome} — {opcao.valor}
-                            </option>
-
-                          )
-                        )}
-
-                      </select>
-
-                    </div>
-
-
-                    {/* PREÇO */}
-
-                    <div className="preco-atual">
-                      {opcaoSelecionada.valor}
-                    </div>
-
-
-                    {/* BOTÃO */}
-
-                    <button
-                      type="button"
-                      className="btn-agendar"
-                      onClick={() =>
-                        agendar(
-                          procedimento,
-                          categoria
-                        )
-                      }
-                    >
-                      Agende já
-                    </button>
-
-                  </div>
-
-                </div>
-              );
-
-            })}
+            {pesquisa && (
+              <button
+                className="clear-btn"
+                type="button"
+                onClick={() => setPesquisa("")}
+                aria-label="Limpar pesquisa"
+              >
+                ×
+              </button>
+            )}
 
           </div>
 
         </section>
 
-      ))}
+        {categoriasFiltradas.map((categoria) => (
 
+          <section
+            className="categoria"
+            key={categoria.nome}
+          >
 
-      {/* =====================================================
-          SEM RESULTADOS
-      ===================================================== */}
+            <h2 className="titulo-categoria">
+              {categoria.nome}
+            </h2>
 
-      {categoriasFiltradas.length === 0 && (
+            <div className="container-procedimentos">
 
-        <div className="nenhum-produto">
+              {categoria.procedimentos.map((procedimento) => {
 
-          <div className="icone-sem-resultado">
-            🔍
+                const indice =
+                  selecionados[procedimento.id] ?? 0;
+
+                const opcaoSelecionada =
+                  procedimento.opcoes[indice];
+
+                return (
+                  <div
+                    className="procedimento"
+                    key={procedimento.id}
+                  >
+
+                    <div className="imagem-procedimento">
+
+                      <img
+                        src={procedimento.imagem}
+                        alt={procedimento.nome}
+                      />
+
+                    </div>
+
+                    <div className="conteudo-procedimento">
+
+                      <h3>
+                        {procedimento.nome}
+                      </h3>
+
+                      <p>
+                        {procedimento.descricao}
+                      </p>
+
+                      <div className="opcoes-valor">
+
+                        <label>
+                          Opções:
+                        </label>
+
+                        <select
+                          className="variant-select"
+                          value={indice}
+                          onChange={(e) =>
+                            selecionarOpcao(
+                              procedimento.id,
+                              e.target.value
+                            )
+                          }
+                        >
+
+                          {procedimento.opcoes.map(
+                            (opcao, index) => (
+
+                              <option
+                                key={index}
+                                value={index}
+                              >
+                                {opcao.nome} — {opcao.valor}
+                              </option>
+
+                            )
+                          )}
+
+                        </select>
+
+                      </div>
+
+                      <div className="preco-atual">
+                        {opcaoSelecionada.valor}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="btn-agendar"
+                        onClick={() =>
+                          agendar(
+                            procedimento,
+                            categoria
+                          )
+                        }
+                      >
+                        Agende já
+                      </button>
+
+                    </div>
+
+                  </div>
+                );
+
+              })}
+
+            </div>
+
+          </section>
+
+        ))}
+
+        {categoriasFiltradas.length === 0 && (
+
+          <div className="nenhum-produto">
+
+            <div className="icone-sem-resultado">
+              🔍
+            </div>
+
+            <h3>
+              Nenhum procedimento encontrado
+            </h3>
+
+            <p>
+              Tente pesquisar por outro nome,
+              categoria ou descrição.
+            </p>
+
           </div>
 
-          <h3>
-            Nenhum procedimento encontrado
-          </h3>
+        )}
 
-          <p>
-            Tente pesquisar por outro nome,
-            categoria ou descrição.
-          </p>
-
-        </div>
-
-      )}
-
-    </main>
-  </>
-);
+      </main>
+    </>
+  );
 
 }
-
 
 export default Procedimentos;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../supabase";
 import "./Agendamento.css";
 
 function Agendamento({ setPagina }) {
@@ -39,46 +40,57 @@ function Agendamento({ setPagina }) {
   const [erroTelefone, setErroTelefone] =
     useState("");
 
+  // Estado para controlar o mês e ano exibidos no calendário
+  const [dataVisualizacao, setDataVisualizacao] = useState(new Date());
+
+  const anoAtual = dataVisualizacao.getFullYear();
+  const mesAtual = dataVisualizacao.getMonth();
+
 
   // =========================================================
-  // CARREGAR PROCEDIMENTO ESCOLHIDO
+  // CARREGAR PROCEDIMENTO E DADOS DO CLIENTE
   // =========================================================
 
   useEffect(() => {
-
-    try {
-
-      const dados =
-        JSON.parse(
-          sessionStorage.getItem(
-            "agendamentoDetalhes"
-          )
-        );
-
-      if (dados) {
-
-        setAgendamentoDetalhes(dados);
-
+    const dadosSalvos = sessionStorage.getItem("agendamentoDetalhes");
+    if (dadosSalvos) {
+      try {
+        setAgendamentoDetalhes(JSON.parse(dadosSalvos));
+      } catch (e) {
+        console.error("Erro ao ler detalhes do agendamento:", e);
       }
-
-    } catch (erro) {
-
-      console.error(
-        "Erro ao carregar procedimento:",
-        erro
-      );
-
     }
 
+    async function carregarDadosCliente() {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        setEmail(user.email || "");
+
+        const { data: perfil } = await supabase
+          .from("perfis")
+          .select("nome, telefone")
+          .eq("id", user.id)
+          .single();
+
+        if (perfil) {
+          setNome(perfil.nome || user.user_metadata?.username || "");
+          setTelefone(perfil.telefone || "");
+        } else {
+          setNome(user.user_metadata?.username || "");
+        }
+      }
+    }
+
+    carregarDadosCliente();
   }, []);
 
 
   // =========================================================
-  // HORÁRIOS DISPONÍVEIS
+  // HORÁRIOS DISPONÍVEIS E MAPEAMENTO INTELIGENTE
   // =========================================================
 
   const horarios = {
-
     "Limpeza de pele": {
       3: ["08:00", "09:30", "14:00"],
       4: ["09:00", "10:00", "15:00"],
@@ -102,7 +114,6 @@ function Agendamento({ setPagina }) {
       28: ["10:00", "14:00", "16:00"],
       31: ["08:30", "11:00", "15:00"],
     },
-
     "Design de sobrancelhas": {
       3: ["08:30", "10:00", "14:30"],
       4: ["09:30", "13:30", "15:30"],
@@ -126,7 +137,6 @@ function Agendamento({ setPagina }) {
       28: ["08:00", "10:00", "16:00"],
       31: ["09:00", "13:00", "15:00"],
     },
-
     "Depilação": {
       3: ["09:00", "10:30", "15:00"],
       4: ["08:00", "11:00", "14:00"],
@@ -150,7 +160,6 @@ function Agendamento({ setPagina }) {
       28: ["08:00", "10:00", "16:00"],
       31: ["09:30", "14:00", "15:00"],
     },
-
     "Metal Detox": {
       3: ["08:00", "13:00", "15:00"],
       4: ["10:00", "14:00"],
@@ -174,7 +183,6 @@ function Agendamento({ setPagina }) {
       28: ["08:00", "14:00"],
       31: ["10:00", "15:30"],
     },
-
     "Reconstrução": {
       3: ["09:00", "14:00"],
       4: ["08:30", "13:30", "16:00"],
@@ -198,7 +206,6 @@ function Agendamento({ setPagina }) {
       28: ["08:00", "13:00", "16:00"],
       31: ["09:30", "14:00"],
     },
-
     "Reparação": {
       3: ["10:00", "14:30"],
       4: ["09:00", "13:00", "15:30"],
@@ -222,85 +229,65 @@ function Agendamento({ setPagina }) {
       28: ["08:30", "13:00", "15:30"],
       31: ["09:30", "14:30"],
     },
-
   };
 
-// =========================================================
-// CALENDÁRIO - MÊS ATUAL
-// =========================================================
+  // Funções para mudar o mês
+  const avancarMes = () => {
+    setDataVisualizacao(new Date(anoAtual, mesAtual + 1, 1));
+    setDataSelecionada(null);
+    setHorarioSelecionado(null);
+  };
 
-const hoje = new Date();
+  const voltarMes = () => {
+    setDataVisualizacao(new Date(anoAtual, mesAtual - 1, 1));
+    setDataSelecionada(null);
+    setHorarioSelecionado(null);
+  };
 
-const anoAtual = hoje.getFullYear();
-const mesAtual = hoje.getMonth();
+  const quantidadeDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
+  const dias = Array.from({ length: quantidadeDias }, (_, index) => index + 1);
 
-// Quantidade de dias do mês atual
-const quantidadeDias =
-  new Date(
-    anoAtual,
-    mesAtual + 1,
-    0
-  ).getDate();
+  const primeiroDiaDaSemana = new Date(anoAtual, mesAtual, 1).getDay();
+  const espacosVazios = Array.from({ length: primeiroDiaDaSemana }, (_, index) => index);
 
-const dias = Array.from(
-  { length: quantidadeDias },
-  (_, index) => index + 1
-);
-
-// Descobre em qual dia da semana começa o mês
-const primeiroDiaDaSemana =
-  new Date(
-    anoAtual,
-    mesAtual,
-    1
-  ).getDay();
-
-const espacosVazios = Array.from(
-  { length: primeiroDiaDaSemana },
-  (_, index) => index
-);
-
-// Nome do mês
-const nomeMes =
-  new Intl.DateTimeFormat(
-    "pt-BR",
-    {
-      month: "long"
-    }
-  ).format(
-    new Date(
-      anoAtual,
-      mesAtual,
-      1
-    )
+  const nomeMes = new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(
+    new Date(anoAtual, mesAtual, 1)
   );
-
-const nomeMesFormatado =
-  nomeMes.charAt(0).toUpperCase() +
-  nomeMes.slice(1);
-  
+  const nomeMesFormatado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
 
 
   // =========================================================
-// VERIFICAR SE O DIA JÁ PASSOU
-// =========================================================
+  // VERIFICAR SE O DIA JÁ PASSOU
+  // =========================================================
 
-function diaJaPassou(dia) {
+  function diaJaPassou(dia) {
+    const hojeReal = new Date();
+    hojeReal.setHours(0, 0, 0, 0);
 
-  const dataHoje = new Date(
-    anoAtual,
-    mesAtual,
-    hoje.getDate()
-  );
+    const dataCalendario = new Date(anoAtual, mesAtual, dia);
+    dataCalendario.setHours(0, 0, 0, 0);
 
-  const dataCalendario = new Date(
-    anoAtual,
-    mesAtual,
-    dia
-  );
+    return dataCalendario < hojeReal;
+  }
 
-  return dataCalendario < dataHoje;
-}
+
+  // =========================================================
+  // MAPEAR PROCEDIMENTO PARA AS CHAVES DE HORÁRIOS
+  // =========================================================
+
+  function obterChaveHorarios() {
+    if (!agendamentoDetalhes) return null;
+    const texto = (agendamentoDetalhes.variante || agendamentoDetalhes.procedimento || "").toLowerCase();
+
+    if (texto.includes("sobrancelh")) return "Design de sobrancelhas";
+    if (texto.includes("depila")) return "Depilação";
+    if (texto.includes("limpeza") || texto.includes("facial") || texto.includes("peeling") || texto.includes("dermaplaning") || texto.includes("microagulhamento")) return "Limpeza de pele";
+    if (texto.includes("metal") || texto.includes("detox")) return "Metal Detox";
+    if (texto.includes("reconstrução") || texto.includes("reconstrucao")) return "Reconstrução";
+    if (texto.includes("reparação") || texto.includes("reparacao")) return "Reparação";
+
+    return "Limpeza de pele";
+  }
 
 
   // =========================================================
@@ -308,992 +295,297 @@ function diaJaPassou(dia) {
   // =========================================================
 
   function diaTemHorario(dia) {
+    if (!agendamentoDetalhes) return false;
 
-    if (!agendamentoDetalhes) {
-      return false;
+    const chave = obterChaveHorarios();
+    const lista = horarios[chave]?.[dia];
+    if (lista) {
+      return lista.length > 0;
     }
 
-    const procedimento =
-      agendamentoDetalhes.variante ||
-      agendamentoDetalhes.procedimento;
-
-    return (
-      horarios[procedimento]?.[dia]?.length > 0
-    );
+    const diaSemana = new Date(anoAtual, mesAtual, dia).getDay();
+    return diaSemana !== 0; // Libera dias úteis por padrão
   }
 
 
-  // =========================================================
-  // HORÁRIOS DISPONÍVEIS
-  // =========================================================
-
-  const procedimentoParaHorario =
-    agendamentoDetalhes?.variante ||
-    agendamentoDetalhes?.procedimento;
-
+  const chaveHorario = obterChaveHorarios();
   const horariosDisponiveis =
-    procedimentoParaHorario &&
-    dataSelecionada
-      ? horarios[
-          procedimentoParaHorario
-        ]?.[dataSelecionada] || []
+    chaveHorario && dataSelecionada
+      ? horarios[chaveHorario]?.[dataSelecionada] || ["09:00", "10:30", "14:00", "15:30", "17:00"]
       : [];
 
 
   // =========================================================
-  // VALIDAR EMAIL
+  // VALIDAÇÕES E CONFIRMAÇÃO
   // =========================================================
 
   function validarEmail(valor) {
-
-    const regex =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!valor) {
-
-      setErroEmail(
-        "Digite seu e-mail."
-      );
-
+      setErroEmail("Digite seu e-mail.");
       return false;
     }
-
     if (!regex.test(valor)) {
-
-      setErroEmail(
-        "Digite um e-mail válido."
-      );
-
+      setErroEmail("Digite um e-mail válido.");
       return false;
     }
-
     setErroEmail("");
-
     return true;
   }
-
-
-  // =========================================================
-  // ALTERAR EMAIL
-  // =========================================================
 
   function handleEmailChange(e) {
-
-    let valor =
-      e.target.value;
-
-    valor =
-      valor.replace(/\s/g, "");
-
-    valor =
-      valor.replace(
-        /[^a-zA-Z0-9@._%+-]/g,
-        ""
-      );
-
-    const partes =
-      valor.split("@");
-
-    if (partes.length > 2) {
-
-      valor =
-        partes[0] +
-        "@" +
-        partes.slice(1).join("");
-
-    }
-
-    valor =
-      valor.substring(0, 100);
-
+    let valor = e.target.value.replace(/\s/g, "");
     setEmail(valor);
-
     if (!valor) {
-
       setErroEmail("");
-
       return;
     }
-
-    const regex =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!regex.test(valor)) {
-
-      setErroEmail(
-        "Digite um e-mail válido."
-      );
-
-    } else {
-
-      setErroEmail("");
-
-    }
-
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setErroEmail(regex.test(valor) ? "" : "Digite um e-mail válido.");
   }
-
-
-  // =========================================================
-  // ALTERAR TELEFONE
-  // =========================================================
 
   function handleTelefoneChange(e) {
-
-    let valor =
-      e.target.value.replace(/\D/g, "");
-
-    valor =
-      valor.substring(0, 11);
-
+    let valor = e.target.value.replace(/\D/g, "").substring(0, 11);
     if (valor.length <= 2) {
-
-      valor =
-        valor.replace(
-          /(\d{0,2})/,
-          "($1"
-        );
-
+      valor = valor.replace(/(\d{0,2})/, "($1");
     } else if (valor.length <= 7) {
-
-      valor =
-        valor.replace(
-          /(\d{2})(\d{0,5})/,
-          "($1) $2"
-        );
-
+      valor = valor.replace(/(\d{2})(\d{0,5})/, "($1) $2");
     } else {
-
-      valor =
-        valor.replace(
-          /(\d{2})(\d{5})(\d{0,4})/,
-          "($1) $2-$3"
-        );
-
+      valor = valor.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
     }
-
     setTelefone(valor);
-
-    const numeros =
-      valor.replace(/\D/g, "");
-
-    if (
-      numeros.length > 0 &&
-      numeros.length < 11
-    ) {
-
-      setErroTelefone(
-        "Digite um telefone válido."
-      );
-
-    } else {
-
-      setErroTelefone("");
-
-    }
-
+    const numeros = valor.replace(/\D/g, "");
+    setErroTelefone(numeros.length > 0 && numeros.length < 11 ? "Digite um telefone válido." : "");
   }
 
-
-  // =========================================================
-  // VALIDAR TELEFONE
-  // =========================================================
-
   function validarTelefone() {
-
-    const numeros =
-      telefone.replace(/\D/g, "");
-
-    if (!numeros) {
-
-      setErroTelefone(
-        "Digite seu telefone."
-      );
-
+    const numeros = telefone.replace(/\D/g, "");
+    if (!numeros || numeros.length !== 11) {
+      setErroTelefone("Digite um telefone válido.");
       return false;
     }
-
-    if (numeros.length !== 11) {
-
-      setErroTelefone(
-        "Digite um telefone válido."
-      );
-
-      return false;
-    }
-
     setErroTelefone("");
-
     return true;
   }
 
-
-  // =========================================================
-  // CONFIRMAR AGENDAMENTO
-  // =========================================================
-
-  function confirmarAgendamento() {
-
+  async function confirmarAgendamento() {
     setMensagem("");
 
-
-    // =======================================================
-    // VERIFICAR PROCEDIMENTO
-    // =======================================================
-
     if (!agendamentoDetalhes) {
-
-      setMensagem(
-        "Nenhum procedimento foi selecionado."
-      );
-
+      setMensagem("Nenhum procedimento foi selecionado.");
       return;
     }
 
-
-    // =======================================================
-    // VERIFICAR NOME
-    // =======================================================
-
-    if (!nome.trim()) {
-
-      setMensagem(
-        "Digite seu nome."
-      );
-
+    if (!nome.trim() || !validarEmail(email) || !validarTelefone()) {
       return;
     }
-
-
-    // =======================================================
-    // VERIFICAR EMAIL
-    // =======================================================
-
-    if (!validarEmail(email)) {
-      return;
-    }
-
-
-    // =======================================================
-    // VERIFICAR TELEFONE
-    // =======================================================
-
-    if (!validarTelefone()) {
-      return;
-    }
-
-
-    // =======================================================
-    // VERIFICAR DATA
-    // =======================================================
 
     if (!dataSelecionada) {
-
-      setMensagem(
-        "Selecione uma data."
-      );
-
+      setMensagem("Selecione uma data.");
       return;
     }
-
-
-    // =======================================================
-    // GARANTIR QUE A DATA NÃO PASSOU
-    // =======================================================
 
     if (diaJaPassou(dataSelecionada)) {
-
-      setMensagem(
-        "Não é possível agendar para uma data que já passou."
-      );
-
+      setMensagem("Não é possível agendar para uma data que já passou.");
       return;
     }
-
-
-    // =======================================================
-    // VERIFICAR HORÁRIO
-    // =======================================================
 
     if (!horarioSelecionado) {
-
-      setMensagem(
-        "Selecione um horário."
-      );
-
+      setMensagem("Selecione um horário.");
       return;
     }
 
-
-    // =======================================================
-    // CRIAR DATA
-    // =======================================================
-
-   const data =
-  `${anoAtual}-${String(
-    mesAtual + 1
-  ).padStart(2, "0")}-${String(
-    dataSelecionada
-  ).padStart(2, "0")}`;
-
-    // =======================================================
-    // CRIAR AGENDAMENTO
-    // =======================================================
-
-    const novoAgendamento = {
-
-      id: Date.now(),
-
-      nome:
-        nome.trim(),
-
-      email:
-        email.trim(),
-
-      phone:
-        telefone,
-
-      procedimento:
-        agendamentoDetalhes.procedimento,
-
-      categoria:
-        agendamentoDetalhes.categoria,
-
-      variante:
-        agendamentoDetalhes.variante,
-
-      valor:
-        agendamentoDetalhes.valor,
-
-      duracao:
-        agendamentoDetalhes.duracao,
-
-      retoque:
-        agendamentoDetalhes.retoque,
-
-      profissional:
-        agendamentoDetalhes.profissional,
-
-      data:
-        data,
-
-      horario:
-        horarioSelecionado,
-
-      status:
-        "pending"
-
-    };
-
-
-    // =======================================================
-    // PEGAR AGENDAMENTOS EXISTENTES
-    // =======================================================
-
-    let agendamentosExistentes = [];
-
-    try {
-
-      agendamentosExistentes =
-        JSON.parse(
-          localStorage.getItem(
-            "agendamentos"
-          )
-        ) || [];
-
-    } catch (erro) {
-
-      console.error(
-        "Erro ao carregar agendamentos:",
-        erro
-      );
-
-      agendamentosExistentes = [];
-
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setMensagem("Usuário não autenticado.");
+      return;
     }
 
+    const dataFormatada = `${anoAtual}-${String(
+      mesAtual + 1
+    ).padStart(2, "0")}-${String(
+      dataSelecionada
+    ).padStart(2, "0")}`;
 
-    // =======================================================
-    // ADICIONAR NOVO AGENDAMENTO
-    // =======================================================
+    // Monta o nome do procedimento incluindo a variante/opção escolhida
+    const nomeProcedimentoCompleto = agendamentoDetalhes.variante
+      ? `${agendamentoDetalhes.procedimento} - ${agendamentoDetalhes.variante}`
+      : agendamentoDetalhes.procedimento;
 
-    const listaAtualizada = [
+    const novoAgendamento = {
+      perfil_id: user.id,
+      nome_cliente: nome.trim(),
+      email: email.trim(),
+      procedimento: nomeProcedimentoCompleto,
+      data: dataFormatada,
+      horario: horarioSelecionado
+    };
 
-      ...agendamentosExistentes,
+    const { error } = await supabase
+      .from('agendamentos')
+      .insert([novoAgendamento]);
 
-      novoAgendamento
+    if (error) {
+      console.error("Erro ao salvar no Supabase:", error.message);
+      setMensagem("Erro ao realizar agendamento: " + error.message);
+      return;
+    }
 
-    ];
-
-
-    // =======================================================
-    // SALVAR NO LOCALSTORAGE
-    // =======================================================
-
-    localStorage.setItem(
-      "agendamentos",
-      JSON.stringify(
-        listaAtualizada
-      )
-    );
-
-
-    // =======================================================
-    // CONFIRMAÇÃO
-    // =======================================================
-
-    setMensagem(
-      "Agendamento realizado com sucesso!"
-    );
-
-
-    // =======================================================
-    // LIMPAR PROCEDIMENTO TEMPORÁRIO
-    // =======================================================
-
-    sessionStorage.removeItem(
-      "agendamentoDetalhes"
-    );
-
-
-    // =======================================================
-    // IR PARA A AGENDA
-    // =======================================================
+    setMensagem("Agendamento realizado com sucesso!");
+    sessionStorage.removeItem("agendamentoDetalhes");
 
     setTimeout(() => {
-
       if (setPagina) {
-
         setPagina("agenda");
-
       }
-
     }, 1000);
-
   }
-
-
-  // =========================================================
-  // RENDER
-  // =========================================================
-
   return (
-
     <main className="pagina-agendamento">
-
-
-      {/* =====================================================
-          TÍTULO
-      ===================================================== */}
-
       <div className="titulo-agendamento">
-
-        <h1>
-          Novo Agendamento
-        </h1>
-
+        <h1>Novo Agendamento</h1>
       </div>
 
-
       <div className="conteudo-agendamento">
-
-
-        {/* ===================================================
-            COLUNA ESQUERDA
-        =================================================== */}
-
         <aside className="coluna-informacoes">
-
-
-          {/* =================================================
-              INFORMAÇÕES
-          ================================================= */}
-
           <section className="informacoes">
-
-            <h2>
-              Informações
-            </h2>
-
-
-            {/* NOME */}
+            <h2>Informações</h2>
 
             <div className="campo">
-
-              <label>
-                Nome Cliente:
-              </label>
-
+              <label>Nome Cliente:</label>
               <input
                 type="text"
                 placeholder="Digite seu nome"
                 value={nome}
-                onChange={(e) =>
-                  setNome(e.target.value)
-                }
+                onChange={(e) => setNome(e.target.value)}
               />
-
             </div>
 
-
-            {/* EMAIL */}
-
             <div className="campo">
-
-              <label>
-                Email:
-              </label>
-
+              <label>Email:</label>
               <input
                 type="email"
                 placeholder="ex: exemplo@gmail.com"
                 value={email}
                 onChange={handleEmailChange}
-                onBlur={() =>
-                  email &&
-                  validarEmail(email)
-                }
                 maxLength={100}
-                autoComplete="email"
               />
-
-              {erroEmail && (
-
-                <small
-                  className="erro-campo"
-                  style={{
-                    color: "#b94b65",
-                    display: "block",
-                    marginTop: "5px"
-                  }}
-                >
-                  {erroEmail}
-                </small>
-
-              )}
-
+              {erroEmail && <small style={{ color: "#b94b65", display: "block", marginTop: "5px" }}>{erroEmail}</small>}
             </div>
-
-
-            {/* TELEFONE */}
 
             <div className="campo">
-
-              <label>
-                Telefone:
-              </label>
-
+              <label>Telefone:</label>
               <input
                 type="tel"
-                inputMode="numeric"
                 placeholder="ex: (11) 99999-9999"
                 value={telefone}
-                onChange={
-                  handleTelefoneChange
-                }
-                onBlur={() =>
-                  telefone &&
-                  validarTelefone()
-                }
+                onChange={handleTelefoneChange}
                 maxLength={15}
-                autoComplete="tel"
               />
-
-              {erroTelefone && (
-
-                <small
-                  className="erro-campo"
-                  style={{
-                    color: "#b94b65",
-                    display: "block",
-                    marginTop: "5px"
-                  }}
-                >
-                  {erroTelefone}
-                </small>
-
-              )}
-
+              {erroTelefone && <small style={{ color: "#b94b65", display: "block", marginTop: "5px" }}>{erroTelefone}</small>}
             </div>
-
           </section>
-
-
-          {/* =================================================
-              DETALHES
-          ================================================= */}
 
           <section className="detalhes-agendamento">
-
-            <h2>
-              Detalhes
-            </h2>
-
-
-            <p>
-
-              <strong>
-                Procedimento:
-              </strong>{" "}
-
-              {agendamentoDetalhes
-                ?.procedimento || "—"}
-
-            </p>
-
-
-            {/* OPÇÃO */}
-
-            {agendamentoDetalhes?.variante && (
-
-              <p>
-
-                <strong>
-                  Opção:
-                </strong>{" "}
-
-                {agendamentoDetalhes.variante}
-
-              </p>
-
-            )}
-
-
-            <p>
-
-              <strong>
-                Data:
-              </strong>{" "}
-
-          {dataSelecionada
-              ? `${String(
-              dataSelecionada
-              ).padStart(2, "0")}/${String(
-               mesAtual + 1
-              ).padStart(2, "0")}/${anoAtual}`
-
-           : "—"}
-
-            </p>
-
-
-            <p>
-
-              <strong>
-                Horário:
-              </strong>{" "}
-
-              {horarioSelecionado || "—"}
-
-            </p>
-
-
-            <p>
-
-              <strong>
-                Duração:
-              </strong>{" "}
-
-              {agendamentoDetalhes
-                ?.duracao || "—"}
-
-            </p>
-
-
-            <p>
-
-              <strong>
-                Valor:
-              </strong>{" "}
-
-              {agendamentoDetalhes
-                ?.valor || "—"}
-
-            </p>
-
-
-            <p>
-
-              <strong>
-                Profissional:
-              </strong>{" "}
-
-              {agendamentoDetalhes
-                ?.profissional || "—"}
-
-            </p>
-
+            <h2>Detalhes</h2>
+            <p><strong>Procedimento:</strong> {agendamentoDetalhes?.procedimento || "—"}</p>
+            {agendamentoDetalhes?.variante && <p><strong>Opção:</strong> {agendamentoDetalhes.variante}</p>}
+            <p><strong>Data:</strong> {dataSelecionada ? `${String(dataSelecionada).padStart(2, "0")}/${String(mesAtual + 1).padStart(2, "0")}/${anoAtual}` : "—"}</p>
+            <p><strong>Horário:</strong> {horarioSelecionado || "—"}</p>
+            <p><strong>Duração:</strong> {agendamentoDetalhes?.duracao || "—"}</p>
+            <p><strong>Valor:</strong> {agendamentoDetalhes?.valor || "—"}</p>
+            <p><strong>Profissional:</strong> {agendamentoDetalhes?.profissional || "—"}</p>
           </section>
-
         </aside>
 
-
-        {/* ===================================================
-            COLUNA DIREITA
-        =================================================== */}
-
         <section className="area-agendamento">
-
-
-          <h2>
-            Selecione uma Data
-          </h2>
-
-
-          {/* =================================================
-              CALENDÁRIO
-          ================================================= */}
+          <h2>Selecione uma Data</h2>
 
           <div className="calendario">
-
-
-            <div className="mes">
-           {nomeMesFormatado} {anoAtual}
-             </div>
- 
-
-            {/* DIAS DA SEMANA */}
-
-            <div className="dias-semana">
-
-              <span>Dom</span>
-              <span>Seg</span>
-              <span>Ter</span>
-              <span>Qua</span>
-              <span>Qui</span>
-              <span>Sex</span>
-              <span>Sáb</span>
-
+            {/* Cabeçalho do mês com botões de navegação */}
+            <div className="mes" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <button type="button" onClick={voltarMes} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "16px", color: "#a95f70" }}>◀</button>
+              <span>{nomeMesFormatado} {anoAtual}</span>
+              <button type="button" onClick={avancarMes} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "16px", color: "#a95f70" }}>▶</button>
             </div>
 
-
-            {/* DIAS */}
+            <div className="dias-semana">
+              <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+            </div>
 
             <div className="dias">
-
-
-              {/* ESPAÇOS */}
-
-              {espacosVazios.map(
-                (espaco) => (
-
-                  <span
-                    key={`vazio-${espaco}`}
-                  ></span>
-
-                )
-              )}
-
-
-              {/* DIAS */}
+              {espacosVazios.map((espaco) => (
+                <span key={`vazio-${espaco}`}></span>
+              ))}
 
               {dias.map((dia) => {
-
-                const disponivel =
-                  diaTemHorario(dia);
-
-                const passado =
-                  diaJaPassou(dia);
-
+                const disponivel = diaTemHorario(dia);
+                const passado = diaJaPassou(dia);
 
                 return (
-
                   <button
                     key={dia}
                     type="button"
                     className={`
                       dia
-                      ${
-                        dataSelecionada === dia
-                          ? "selecionado"
-                          : ""
-                      }
-                      ${
-                        passado ||
-                        (
-                          !disponivel &&
-                          agendamentoDetalhes
-                        )
-                          ? "indisponivel"
-                          : ""
-                      }
+                      ${dataSelecionada === dia ? "selecionado" : ""}
+                      ${passado || (!disponivel && agendamentoDetalhes) ? "indisponivel" : ""}
                     `}
-                    disabled={
-                      passado ||
-                      (
-                        agendamentoDetalhes &&
-                        !disponivel
-                      )
-                    }
+                    disabled={passado || (agendamentoDetalhes && !disponivel)}
                     onClick={() => {
-
-                      if (passado) {
-                        return;
-                      }
-
-                      setDataSelecionada(
-                        dia
-                      );
-
-                      setHorarioSelecionado(
-                        null
-                      );
-
+                      if (passado) return;
+                      setDataSelecionada(dia);
+                      setHorarioSelecionado(null);
                       setMensagem("");
-
                     }}
                   >
-
                     {dia}
-
                   </button>
-
                 );
-
               })}
-
             </div>
-
           </div>
-
-
-          {/* =================================================
-              HORÁRIOS
-          ================================================= */}
 
           <div className="area-horarios">
-
-
-            <h2>
-              Horários Disponíveis
-            </h2>
-
-
-            {/* SEM PROCEDIMENTO */}
-
+            <h2>Horários Disponíveis</h2>
             {!agendamentoDetalhes ? (
-
-              <p className="aviso-horario">
-
-                Nenhum procedimento foi
-                selecionado.
-
-                <br />
-
-                Volte para a tela de
-                procedimentos e escolha um.
-
-              </p>
-
+              <p className="aviso-horario">Nenhum procedimento selecionado.</p>
             ) : !dataSelecionada ? (
-
-              <p className="aviso-horario">
-
-                Selecione uma data para
-                ver os horários disponíveis.
-
-              </p>
-
+              <p className="aviso-horario">Selecione uma data para ver os horários.</p>
             ) : horariosDisponiveis.length === 0 ? (
-
-              <p className="aviso-horario">
-
-                Não há horários disponíveis
-                para esta data.
-
-              </p>
-
+              <p className="aviso-horario">Não há horários disponíveis para esta data.</p>
             ) : (
-
               <div className="horarios">
-
-                {horariosDisponiveis.map(
-                  (horario) => (
-
-                    <button
-                      key={horario}
-                      type="button"
-                      className={
-                        horarioSelecionado ===
-                        horario
-
-                          ? "horario selecionado"
-
-                          : "horario"
-                      }
-                      onClick={() => {
-
-                        setHorarioSelecionado(
-                          horario
-                        );
-
-                        setMensagem("");
-
-                      }}
-                    >
-
-                      {horario}
-
-                    </button>
-
-                  )
-                )}
-
+                {horariosDisponiveis.map((horario) => (
+                  <button
+                    key={horario}
+                    type="button"
+                    className={horarioSelecionado === horario ? "horario selecionado" : "horario"}
+                    onClick={() => {
+                      setHorarioSelecionado(horario);
+                      setMensagem("");
+                    }}
+                  >
+                    {horario}
+                  </button>
+                ))}
               </div>
-
             )}
-
           </div>
 
-
-          {/* =================================================
-              MENSAGEM
-          ================================================= */}
-
           {mensagem && (
-
-            <p
-              className="mensagem-agendamento"
-              style={{
-                color:
-                  mensagem.includes(
-                    "sucesso"
-                  )
-                    ? "#4f8a61"
-                    : "#b94b65"
-              }}
-            >
-
+            <p className="mensagem-agendamento" style={{ color: mensagem.includes("sucesso") ? "#4f8a61" : "#b94b65" }}>
               {mensagem}
-
             </p>
-
           )}
 
-
-          {/* =================================================
-              BOTÃO
-          ================================================= */}
-
-          <button
-            type="button"
-            className="botao-confirmar"
-            onClick={
-              confirmarAgendamento
-            }
-          >
-
+          <button type="button" className="botao-confirmar" onClick={confirmarAgendamento}>
             Confirmar Agendamento
-
           </button>
-
         </section>
-
       </div>
-
     </main>
-
   );
-
 }
 
 export default Agendamento;

@@ -1,293 +1,207 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../supabase";
 import "./EditarPerfil.css";
 
 function EditarPerfil({ setPagina }) {
 
-  // =========================================================
-  // DADOS SALVOS
-  // =========================================================
-
-  const nomeSalvo =
-    localStorage.getItem("nomeUsuario") || "Nome do Usuário";
-
-  const emailSalvo =
-    localStorage.getItem("emailUsuario") || "usuario@gmail.com";
-
-  const fotoSalva =
-    localStorage.getItem("fotoPerfil") || "perfil.png";
-
-
-  // =========================================================
-  // ESTADOS
-  // =========================================================
-
-  const [nome, setNome] = useState(nomeSalvo);
-
-  const [email, setEmail] = useState(emailSalvo);
-
-  const [fotoPreview, setFotoPreview] = useState(fotoSalva);
-
-  const [fotoPendente, setFotoPendente] = useState(null);
-
-
-  // =========================================================
-  // ESCOLHER FOTO
-  // =========================================================
-
-  const selecionarFoto = (event) => {
-
-    const arquivo = event.target.files[0];
-
-    if (!arquivo) {
-      return;
-    }
-
-
-    // Verifica se é imagem
-
-    if (!arquivo.type.startsWith("image/")) {
-
-      alert("Por favor, selecione um arquivo de imagem.");
-
-      event.target.value = "";
-
-      return;
-    }
-
-
-    // Limite de 5 MB
-
-    const tamanhoMaximoMB = 5;
-
-    if (arquivo.size > tamanhoMaximoMB * 1024 * 1024) {
-
-      alert(
-        `A imagem deve ter no máximo ${tamanhoMaximoMB}MB.`
-      );
-
-      event.target.value = "";
-
-      return;
-    }
-
-
-    // Leitura da imagem
-
-    const leitor = new FileReader();
-
-    leitor.onload = () => {
-
-      setFotoPendente(leitor.result);
-
-      setFotoPreview(leitor.result);
-
-    };
-
-
-    leitor.onerror = () => {
-
-      alert(
-        "Não foi possível ler a imagem selecionada. Tente novamente."
-      );
-
-    };
-
-
-    leitor.readAsDataURL(arquivo);
-  };
-
-
-  // =========================================================
-  // SALVAR ALTERAÇÕES
-  // =========================================================
-
-  const salvarAlteracoes = (event) => {
-
-    event.preventDefault();
-
-
-    // Nome
-
-    const nomeLimpo = nome.trim();
-
-    if (!nomeLimpo) {
-
-      alert("Por favor, informe seu nome.");
-
-      return;
-    }
-
-
-    // E-mail
-
-    const emailLimpo = email.trim();
-
-    const emailValido =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailLimpo);
-
-
-    if (!emailLimpo || !emailValido) {
-
-      alert("Por favor, informe um e-mail válido.");
-
-      return;
-    }
-
-
-    // Salva nome e e-mail
-
-    localStorage.setItem(
-      "nomeUsuario",
-      nomeLimpo
-    );
-
-    localStorage.setItem(
-      "emailUsuario",
-      emailLimpo
-    );
-
-
-    // Salva foto somente se uma nova foi escolhida
-
-    if (fotoPendente) {
-
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [fotoPreview, setFotoPreview] = useState("perfil.png");
+  
+  const [modalAberto, setModalAberto] = useState(false);
+  const [fotosDisponiveis, setFotosDisponiveis] = useState([]);
+  const [carregandoFotos, setCarregandoFotos] = useState(false);
+
+  useEffect(() => {
+    async function carregarDadosUsuario() {
       try {
+        const { data: { user }, error } = await supabase.auth.getUser();
 
-        localStorage.setItem(
-          "fotoPerfil",
-          fotoPendente
-        );
+        if (error) {
+          console.error("Erro ao buscar usuário:", error.message);
+          return;
+        }
 
+        if (user) {
+          // Tenta buscar da tabela "perfis" primeiro, senão pega do metadata
+          const { data: perfilData } = await supabase
+            .from("perfis")
+            .select("nome, foto_url")
+            .eq("id", user.id)
+            .single();
+
+          setNome(perfilData?.nome || user.user_metadata?.username || "");
+          setEmail(user.email || "");
+          if (perfilData?.foto_url) {
+            setFotoPreview(perfilData.foto_url);
+          } else if (user.user_metadata?.avatar_url) {
+            setFotoPreview(user.user_metadata.avatar_url);
+          }
+        }
       } catch (erro) {
-
-        console.warn(
-          "Não foi possível salvar a foto localmente:",
-          erro
-        );
-
-        alert(
-          "Não foi possível salvar a foto. Tente uma imagem menor."
-        );
-
-        return;
+        console.warn("Erro ao carregar perfil:", erro);
       }
     }
 
+    carregarDadosUsuario();
+  }, []);
 
-    // Volta para o perfil
+  const abrirGaleriaSupabase = async () => {
+    setCarregandoFotos(true);
+    setModalAberto(true);
 
-    setPagina("perfil");
+    try {
+      const { data, error } = await supabase.storage
+        .from("fotos_perfil")
+        .list("", { limit: 50, sortBy: { column: "created_at", order: "desc" } });
+
+      if (error) {
+        console.error("Erro ao listar fotos do storage:", error.message);
+        setFotosDisponiveis([]);
+        setCarregandoFotos(false);
+        return;
+      }
+
+      const urls = data
+        .filter((file) => file.name !== ".emptyFolderPlaceholder")
+        .map((file) => {
+          const { data: publicUrlData } = supabase.storage
+            .from("fotos_perfil")
+            .getPublicUrl(file.name);
+          return publicUrlData.publicUrl;
+        });
+
+      setFotosDisponiveis(urls);
+    } catch (err) {
+      console.error("Erro ao carregar galeria:", err);
+      setFotosDisponiveis([]);
+    } finally {
+      setCarregandoFotos(false);
+    }
   };
 
+  const selecionarFotoDaGaleria = (url) => {
+    setFotoPreview(url);
+    setModalAberto(false);
+  };
 
-  // =========================================================
-  // RENDERIZAÇÃO
-  // =========================================================
+  const salvarAlteracoes = async (event) => {
+    event.preventDefault();
+
+    const nomeLimpo = nome.trim();
+    if (!nomeLimpo) {
+      alert("Por favor, informe seu nome.");
+      return;
+    }
+
+    const emailLimpo = email.trim();
+    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailLimpo);
+
+    if (!emailLimpo || !emailValido) {
+      alert("Por favor, informe um e-mail válido.");
+      return;
+    }
+
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        alert("Usuário não autenticado.");
+        return;
+      }
+
+      // 1. Atualizar e-mail e metadados no Auth
+      const { error: updateError } = await supabase.auth.updateUser({
+        email: emailLimpo,
+        data: {
+          username: nomeLimpo,
+          avatar_url: fotoPreview,
+        },
+      });
+
+      if (updateError) {
+        alert("Erro ao atualizar alterações: " + updateError.message);
+        return;
+      }
+
+      // 2. Atualizar explicitamente a tabela "perfis" no banco de dados
+      const { error: perfilError } = await supabase
+        .from("perfis")
+        .update({
+          nome: nomeLimpo,
+          foto_url: fotoPreview,
+        })
+        .eq("id", user.id);
+
+      if (perfilError) {
+        console.error("Erro ao atualizar tabela perfis:", perfilError.message);
+      }
+
+      localStorage.setItem("nomeUsuario", nomeLimpo);
+      localStorage.setItem("emailUsuario", emailLimpo);
+      localStorage.setItem("fotoPerfil", fotoPreview);
+
+      alert("Perfil atualizado com sucesso!");
+      setPagina("perfil");
+
+    } catch (erro) {
+      console.error("Erro inesperado ao salvar perfil:", erro);
+      alert("Ocorreu um erro ao salvar as alterações.");
+    }
+  };
 
   return (
-
     <main className="edit-profile-content">
-
-
-      {/* =====================================================
-          VOLTAR
-      ====================================================== */}
 
       <button
         className="back-link"
+        type="button"
         onClick={() => setPagina("perfil")}
       >
-
         <i className="fa-solid fa-arrow-left"></i>
-
         Voltar para o perfil
-
       </button>
-
-
-      {/* =====================================================
-          CARD
-      ====================================================== */}
 
       <form
         className="edit-profile-card"
         onSubmit={salvarAlteracoes}
       >
 
-
         <h1>Editar Perfil</h1>
 
-
         <p className="subtitle">
-
-          Atualize sua foto e suas informações pessoais.
-
+          Escolha uma foto do storage e atualize suas informações.
         </p>
-
-
-        {/* ===================================================
-            FOTO
-        ==================================================== */}
 
         <div className="edit-photo-wrapper">
 
-
           <div className="profile-photo">
-
             <img
               src={fotoPreview}
               alt="Foto de perfil"
               className="foto-edicao"
             />
 
-
             <button
               className="edit-photo"
               id="btnEditarFoto"
-              aria-label="Trocar foto"
+              aria-label="Escolher foto do Storage"
               type="button"
-              onClick={() =>
-                document
-                  .getElementById("inputFoto")
-                  .click()
-              }
+              onClick={abrirGaleriaSupabase}
             >
-
               <i className="fa-solid fa-pen"></i>
-
             </button>
-
-
-            <input
-              type="file"
-              id="inputFoto"
-              accept="image/*"
-              hidden
-              onChange={selecionarFoto}
-            />
-
           </div>
 
-
           <p className="photo-hint">
-
-            Clique no lápis para trocar sua foto
-
+            Clique no lápis para escolher uma foto do servidor
           </p>
 
         </div>
 
-
-        {/* ===================================================
-            NOME
-        ==================================================== */}
-
         <div className="field-group">
-
           <label htmlFor="nome">
             Nome de usuário
           </label>
-
 
           <input
             type="text"
@@ -295,25 +209,15 @@ function EditarPerfil({ setPagina }) {
             name="nome"
             placeholder="Digite seu nome"
             value={nome}
-            onChange={(event) =>
-              setNome(event.target.value)
-            }
+            onChange={(event) => setNome(event.target.value)}
             required
           />
-
         </div>
 
-
-        {/* ===================================================
-            EMAIL
-        ==================================================== */}
-
         <div className="field-group">
-
           <label htmlFor="email">
             Email
           </label>
-
 
           <input
             type="email"
@@ -321,49 +225,117 @@ function EditarPerfil({ setPagina }) {
             name="email"
             placeholder="ex: aaaaaa@gmail.com"
             value={email}
-            onChange={(event) =>
-              setEmail(event.target.value)
-            }
+            onChange={(event) => setEmail(event.target.value)}
             required
           />
-
         </div>
 
-
-        {/* ===================================================
-            BOTÕES
-        ==================================================== */}
-
         <div className="edit-actions">
-
-
           <button
             type="button"
             className="cancel-button"
             onClick={() => setPagina("perfil")}
           >
-
             Cancelar
-
           </button>
-
 
           <button
             type="submit"
             className="save-button"
           >
-
             Salvar alterações
-
           </button>
-
-
         </div>
 
       </form>
 
+      {modalAberto && (
+        <div style={modalOverlayStyle}>
+          <div style={modalContentStyle}>
+            <h2>Selecione uma imagem do Storage</h2>
+            
+            {carregandoFotos ? (
+              <p style={{ textAlign: "center", margin: "2rem 0" }}>Carregando imagens do servidor...</p>
+            ) : fotosDisponiveis.length === 0 ? (
+              <p style={{ textAlign: "center", margin: "2rem 0" }}>Nenhuma imagem encontrada no bucket fotos_perfil.</p>
+            ) : (
+              <div style={gridStyle}>
+                {fotosDisponiveis.map((url, index) => (
+                  <img
+                    key={index}
+                    src={url}
+                    alt={`Opção ${index}`}
+                    style={imgThumbnailStyle}
+                    onClick={() => selecionarFotoDaGaleria(url)}
+                  />
+                ))}
+              </div>
+            )}
+
+            <button
+              type="button"
+              style={closeButtonStyle}
+              onClick={() => setModalAberto(false)}
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }
+
+const modalOverlayStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.6)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000,
+};
+
+const modalContentStyle = {
+  backgroundColor: "#fff",
+  padding: "2rem",
+  borderRadius: "12px",
+  maxWidth: "500px",
+  width: "90%",
+  maxHeight: "80vh",
+  overflowY: "auto",
+};
+
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
+  gap: "10px",
+  margin: "1.5rem 0",
+};
+
+const imgThumbnailStyle = {
+  width: "100%",
+  height: "100px",
+  objectFit: "cover",
+  borderRadius: "8px",
+  cursor: "pointer",
+  border: "2px solid transparent",
+  transition: "border 0.2s",
+};
+
+const closeButtonStyle = {
+  width: "100%",
+  padding: "10px",
+  backgroundColor: "#b94b65",
+  color: "#fff",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "bold",
+};
 
 export default EditarPerfil;

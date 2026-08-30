@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../supabase";
 import "./Agenda.css";
 
 function Agenda({ setPagina }) {
@@ -17,30 +18,39 @@ function Agenda({ setPagina }) {
 
 
   // =========================================================
-  // CARREGAR AGENDAMENTOS
+  // CARREGAR AGENDAMENTOS DO SUPABASE
   // =========================================================
 
   useEffect(() => {
+    async function carregarAgendamentos() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        let query = supabase.from('agendamentos').select('*');
+        
+        if (user) {
+          query = query.eq('perfil_id', user.id);
+        }
 
-    try {
+        const { data, error } = await query;
 
-      const dados = JSON.parse(
-        localStorage.getItem("agendamentos")
-      ) || [];
+        if (error) {
+          console.error("Erro ao carregar do Supabase:", error.message);
+          setAgendamentos([]);
+        } else {
+          setAgendamentos(data || []);
+        }
 
-      setAgendamentos(dados);
-
-    } catch (erro) {
-
-      console.warn(
-        "Erro ao ler agendamentos:",
-        erro
-      );
-
-      setAgendamentos([]);
-
+      } catch (erro) {
+        console.warn(
+          "Erro ao ler agendamentos:",
+          erro
+        );
+        setAgendamentos([]);
+      }
     }
 
+    carregarAgendamentos();
   }, []);
 
 
@@ -99,10 +109,10 @@ function Agenda({ setPagina }) {
 
 
   // =========================================================
-  // CANCELAR AGENDAMENTO
+  // CANCELAR AGENDAMENTO (SUPABASE)
   // =========================================================
 
-  const cancelarAgendamento = (id) => {
+  const cancelarAgendamento = async (id) => {
 
     const confirmou = window.confirm(
       "Deseja realmente cancelar este agendamento?"
@@ -112,19 +122,21 @@ function Agenda({ setPagina }) {
       return;
     }
 
+    const { error } = await supabase
+      .from('agendamentos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      alert("Erro ao cancelar agendamento: " + error.message);
+      return;
+    }
 
     const listaAtualizada =
       agendamentos.filter(
         (item) =>
           String(item.id) !== String(id)
       );
-
-
-    localStorage.setItem(
-      "agendamentos",
-      JSON.stringify(listaAtualizada)
-    );
-
 
     setAgendamentos(
       listaAtualizada
@@ -154,17 +166,17 @@ function Agenda({ setPagina }) {
 
       `Horário: ${agendamento.horario}\n` +
 
-      `Duração: ${agendamento.duracao}\n` +
+      `Duração: ${agendamento.duracao || "A confirmar"}\n` +
 
-      `Valor: ${agendamento.valor}\n` +
+      `Valor: ${agendamento.valor || "Não informado"}\n` +
 
-      `Profissional: ${agendamento.profissional}\n\n` +
+      `Profissional: ${agendamento.profissional || "Não informado"}\n\n` +
 
-      `Cliente: ${agendamento.nome}\n` +
+      `Cliente: ${agendamento.nome_cliente || agendamento.nome}\n` +
 
       `Email: ${agendamento.email}\n` +
 
-      `Telefone: ${agendamento.phone}`
+      `Telefone: ${agendamento.phone || "Não informado"}`
 
     );
 
@@ -180,19 +192,6 @@ function Agenda({ setPagina }) {
 
   // =========================================================
   // FILTRAR AGENDAMENTOS
-  //
-  // AQUI ESTÁ A CORREÇÃO:
-  //
-  // Agora comparamos:
-  //
-  // DATA + HORÁRIO
-  //
-  // Assim:
-  //
-  // Hoje às 20:00 → Próximos
-  // Hoje às 18:00 → Anteriores
-  // Amanhã → Próximos
-  // Ontem → Anteriores
   // =========================================================
 
   const agendamentosOrdenados =
@@ -511,7 +510,7 @@ function Agenda({ setPagina }) {
 
                         <i className="fa-regular fa-hourglass"></i>
 
-                        {agendamento.duracao}
+                        {agendamento.duracao || "A confirmar"}
 
                       </span>
 
@@ -520,7 +519,7 @@ function Agenda({ setPagina }) {
 
                         <i className="fa-regular fa-user"></i>
 
-                        {agendamento.profissional}
+                        {agendamento.profissional || "Não informado"}
 
                       </span>
 

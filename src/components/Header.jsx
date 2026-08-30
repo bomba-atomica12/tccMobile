@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../supabase";
 import "./Header.css";
 import MenuMobile from "./MenuMobile";
 
@@ -8,11 +9,60 @@ import lojaIcon from "../assets/icones/loja.png";
 import sobreIcon from "../assets/icones/sobre_nos.png";
 import contatoIcon from "../assets/icones/contato.png";
 import carrinhoIcon from "../assets/icones/carrinho.png";
-import perfilIcon from "../assets/icones/perfil_vaziu.png";
-
+import perfilVazioIcon from "../assets/icones/perfil_vaziu.png";
 
 function Header({ setPagina }) {
   const [menuAberto, setMenuAberto] = useState(false);
+  const [fotoPerfil, setFotoPerfil] = useState(perfilVazioIcon);
+
+  // =====================================================
+  // CARREGAR FOTO DO USUÁRIO LOGADO NO HEADER
+  // =====================================================
+
+  useEffect(() => {
+    async function carregarFotoHeader() {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session?.user) {
+        const { data: perfil } = await supabase
+          .from("perfis")
+          .select("foto_url")
+          .eq("id", session.user.id)
+          .single();
+
+        if (perfil?.foto_url) {
+          setFotoPerfil(perfil.foto_url);
+        } else if (session.user.user_metadata?.avatar_url) {
+          setFotoPerfil(session.user.user_metadata.avatar_url);
+        }
+      }
+    }
+
+    carregarFotoHeader();
+
+    // Ouve alterações de login/logout em tempo real
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const { data: perfil } = await supabase
+          .from("perfis")
+          .select("foto_url")
+          .eq("id", session.user.id)
+          .single();
+
+        if (perfil?.foto_url) {
+          setFotoPerfil(perfil.foto_url);
+        } else if (session.user.user_metadata?.avatar_url) {
+          setFotoPerfil(session.user.user_metadata.avatar_url);
+        }
+      } else {
+        setFotoPerfil(perfilVazioIcon);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // =====================================================
   // IR PARA UMA SEÇÃO DA HOME
@@ -33,6 +83,20 @@ function Header({ setPagina }) {
     }, 300);
   };
 
+  // =====================================================
+  // VERIFICAR SESSÃO AO CLICAR NO PERFIL
+  // =====================================================
+
+  const lidarComCliquePerfil = async (e) => {
+    e.preventDefault();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session) {
+      setPagina("perfil");
+    } else {
+      setPagina("login");
+    }
+  };
 
   return (
     <header className="topo">
@@ -163,16 +227,22 @@ function Header({ setPagina }) {
           <img src={carrinhoIcon} alt="Carrinho" />
         </a>
 
-    <a
-      href="#"
-      title="Entrar"
-      onClick={(e) => {
-        e.preventDefault();
-        setPagina("login");
-     }}
-    >
-      <img src={perfilIcon} alt="Entrar" />
-    </a>
+        <a
+          href="#"
+          title="Perfil"
+          onClick={lidarComCliquePerfil}
+        >
+          <img 
+            src={fotoPerfil} 
+            alt="Perfil" 
+            style={{ 
+              width: "28px", 
+              height: "28px", 
+              borderRadius: "50%", 
+              objectFit: "cover" 
+            }} 
+          />
+        </a>
 
       </div>
 

@@ -10,7 +10,7 @@ import Procedimentos from "./pages/Procedimentos";
 import Produtos from "./pages/Produtos";
 import Carrinho from "./pages/Carrinho";
 import Cadastro from "./pages/Cadastro";
-import Login from "./pages/Login";
+import Login from "./pages/login";
 
 import Header from "./components/Header";
 
@@ -28,7 +28,7 @@ function App() {
       )}
 
       {pagina === "perfil" && (
-        <Login setPagina={setPagina} />
+        <Perfil setPagina={setPagina} />
       )}
 
       {pagina === "editarPerfil" && (

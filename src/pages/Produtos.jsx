@@ -107,99 +107,86 @@ function Produtos() {
   // ADICIONAR AO CARRINHO
   // ==============================
 
- function adicionarCarrinho(produto) {
+  function adicionarCarrinho(produto) {
 
-  try {
+    try {
 
-    // Pega o carrinho atual
-    const carrinhoSalvo =
-      sessionStorage.getItem("carrinho");
+      const carrinhoSalvo =
+        sessionStorage.getItem("carrinho");
 
-    const carrinho =
-      carrinhoSalvo
-        ? JSON.parse(carrinhoSalvo)
-        : [];
+      const carrinho =
+        carrinhoSalvo
+          ? JSON.parse(carrinhoSalvo)
+          : [];
 
+      const indiceExistente =
+        carrinho.findIndex(
+          (item) =>
+            item.id === produto.id
+        );
 
-    // Procura se o produto já existe
-    const indiceExistente =
-      carrinho.findIndex(
-        (item) =>
-          item.id === produto.id
+      if (indiceExistente !== -1) {
+
+        carrinho[indiceExistente] = {
+
+          ...carrinho[indiceExistente],
+
+          quantidade:
+            (Number(
+              carrinho[indiceExistente].quantidade
+            ) || 1) + 1
+
+        };
+
+      } else {
+
+        carrinho.push({
+
+          id: produto.id,
+
+          nome: produto.nome,
+
+          categoria: produto.categoria,
+
+          descricao: produto.descricao,
+
+          preco: produto.preco,
+
+          imagem: produto.imagem,
+
+          quantidade: 1
+
+        });
+
+      }
+
+      sessionStorage.setItem(
+        "carrinho",
+        JSON.stringify(carrinho)
       );
 
+      window.dispatchEvent(
+        new Event("carrinhoAtualizado")
+      );
 
-    // Se já existe, aumenta a quantidade
-    if (indiceExistente !== -1) {
+      alert(
+        `${produto.nome}\n\nfoi adicionado ao carrinho!`
+      );
 
-      carrinho[indiceExistente] = {
+    } catch (erro) {
 
-        ...carrinho[indiceExistente],
+      console.error(
+        "Erro ao adicionar produto ao carrinho:",
+        erro
+      );
 
-        quantidade:
-          (Number(
-            carrinho[indiceExistente].quantidade
-          ) || 1) + 1
-
-      };
-
-    } else {
-
-      // Se não existe, adiciona
-      carrinho.push({
-
-        id: produto.id,
-
-        nome: produto.nome,
-
-        categoria: produto.categoria,
-
-        descricao: produto.descricao,
-
-        preco: produto.preco,
-
-        imagem: produto.imagem,
-
-        quantidade: 1
-
-      });
+      alert(
+        "Não foi possível adicionar o produto ao carrinho."
+      );
 
     }
 
-
-    // Salva o carrinho
-    sessionStorage.setItem(
-      "carrinho",
-      JSON.stringify(carrinho)
-    );
-
-
-    // Atualiza outros componentes
-    window.dispatchEvent(
-      new Event("carrinhoAtualizado")
-    );
-
-
-    // Confirmação
-    alert(
-      `${produto.nome}\n\nfoi adicionado ao carrinho!`
-    );
-
-
-  } catch (erro) {
-
-    console.error(
-      "Erro ao adicionar produto ao carrinho:",
-      erro
-    );
-
-    alert(
-      "Não foi possível adicionar o produto ao carrinho."
-    );
-
   }
-
-}
 
 
   // ==============================

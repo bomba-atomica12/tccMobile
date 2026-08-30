@@ -1,289 +1,180 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../supabase";
 import "./Perfil.css";
 
 function Perfil({ setPagina }) {
+
+  const [nome, setNome] = useState("Nome do Usuário");
+  const [email, setEmail] = useState("usuario@email.com");
+  const [fotoPerfil, setFotoPerfil] = useState("perfil.png");
+
+  useEffect(() => {
+    async function carregarPerfil() {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error || !session) {
+          console.warn("Nenhuma sessão ativa encontrada.");
+          return;
+        }
+
+        const user = session.user;
+
+        if (user) {
+          setNome(user.user_metadata?.username || user.user_metadata?.nome || "Nome do Usuário");
+          setEmail(user.email || "usuario@email.com");
+          if (user.user_metadata?.avatar_url) {
+            setFotoPerfil(user.user_metadata.avatar_url);
+          } else {
+            const fotoSalva = localStorage.getItem("fotoPerfil");
+            if (fotoSalva) setFotoPerfil(fotoSalva);
+          }
+        }
+      } catch (erro) {
+        console.warn("Erro ao buscar dados do perfil:", erro);
+      }
+    }
+
+    carregarPerfil();
+  }, []);
+
+  const handleSair = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      alert("Erro ao sair: " + error.message);
+      return;
+    }
+    setPagina("login");
+  };
+
   return (
     <main className="pagina-perfil">
 
-      {/* =========================================
-          CABEÇALHO DO PERFIL
-      ========================================== */}
-
       <section className="perfil-header">
 
-        {/* FOTO */}
-
         <div className="foto-container">
-
           <img
-            src="perfil.png"
+            src={fotoPerfil}
             alt="Foto de perfil"
             className="foto-perfil"
           />
-
         </div>
-
-
-        {/* INFORMAÇÕES */}
 
         <div className="informacoes-perfil">
-
-          <h1>
-            Nome do Usuário
-          </h1>
-
-          <p className="email-perfil">
-            usuario@email.com
-          </p>
-
+          <h1>{nome}</h1>
+          <p className="email-perfil">{email}</p>
           <p className="membro-desde">
-
             <i className="fa-regular fa-calendar"></i>
-
-            Membro desde abril de 2025
-
+            Membro recente
           </p>
-
         </div>
 
-
-        {/* EDITAR PERFIL */}
-
-      <button
-        className="botao-editar-perfil"
-        onClick={() => setPagina("editarPerfil")}
-      >
-        <i className="fa-solid fa-pen"></i>
+        <button
+          className="botao-editar-perfil"
+          type="button"
+          onClick={() => setPagina("editarPerfil")}
+        >
+          <i className="fa-solid fa-pen"></i>
           Editar perfil
-      </button>
+        </button>
 
       </section>
 
-
-      {/* =========================================
-          ACESSO RÁPIDO
-      ========================================== */}
-
       <section className="acesso-rapido">
+        <div className="quick-card">
+          <button className="card-rapido" type="button">
+            <div className="icone-rapido">
+              <i className="fa-regular fa-heart"></i>
+            </div>
+            <div>
+              <h3>Favoritos</h3>
+              <p>Seus procedimentos favoritos salvos</p>
+            </div>
+          </button>
 
-  <div className="quick-card">
-
-    {/* FAVORITOS */}
-
-    <button className="card-rapido">
-
-      <div className="icone-rapido">
-
-        <i className="fa-regular fa-heart"></i>
-
-      </div>
-
-      <div>
-
-        <h3>
-          Favoritos
-        </h3>
-
-        <p>
-          Seus procedimentos favoritos salvos
-        </p>
-
-      </div>
-
-    </button>
-
-
-    {/* AGENDAMENTOS */}
-
-    <button
-      className="card-rapido"
-      onClick={() => setPagina("agenda")}
-    >
-
-      <div className="icone-rapido">
-
-        <i className="fa-regular fa-calendar"></i>
-
-      </div>
-
-      <div>
-
-        <h3>
-          Agendamentos
-        </h3>
-
-        <p>
-          Veja e gerencie seus agendamentos
-        </p>
-
-      </div>
-
-    </button>
-
-  </div>
-
-</section>
-
-      {/* =========================================
-          OPÇÕES DO PERFIL
-      ========================================== */}
+          <button
+            className="card-rapido"
+            type="button"
+            onClick={() => setPagina("agenda")}
+          >
+            <div className="icone-rapido">
+              <i className="fa-regular fa-calendar"></i>
+            </div>
+            <div>
+              <h3>Agendamentos</h3>
+              <p>Veja e gerencie seus agendamentos</p>
+            </div>
+          </button>
+        </div>
+      </section>
 
       <section className="opcoes-perfil">
-
-
-        {/* NOTIFICAÇÕES */}
+        <button
+          className="opcao-perfil"
+          type="button"
+          onClick={() => setPagina("trocarSenha")}
+        >
+          <div className="icone-opcao">
+            <i className="fa-regular fa-bell"></i>
+          </div>
+          <div className="texto-opcao">
+            <h3>Notificações</h3>
+            <p>Gerencie lembretes de agendamentos e novidades</p>
+          </div>
+          <i className="fa-solid fa-chevron-right seta"></i>
+        </button>
 
         <button
           className="opcao-perfil"
+          type="button"
           onClick={() => setPagina("trocarSenha")}
         >
-
           <div className="icone-opcao">
-
-            <i className="fa-regular fa-bell"></i>
-
+            <i className="fa-solid fa-lock"></i>
           </div>
-
-
           <div className="texto-opcao">
-
-            <h3>
-              Notificações
-            </h3>
-
-            <p>
-              Gerencie lembretes de agendamentos
-              e novidades
-            </p>
-
+            <h3>Privacidade e segurança</h3>
+            <p>Gerencie suas informações e segurança da conta</p>
           </div>
-
-
           <i className="fa-solid fa-chevron-right seta"></i>
-
         </button>
 
-
-        {/* PRIVACIDADE */}
-
-      <button
-  className="opcao-perfil"
-  onClick={() => setPagina("trocarSenha")}
->
-
-  <div className="icone-opcao">
-
-    <i className="fa-solid fa-lock"></i>
-
-  </div>
-
-  <div className="texto-opcao">
-
-    <h3>
-      Privacidade e segurança
-    </h3>
-
-    <p>
-      Gerencie suas informações
-      e segurança da conta
-    </p>
-
-  </div>
-
-  <i className="fa-solid fa-chevron-right seta"></i>
-
-</button>
-
-
-        {/* FORMAS DE PAGAMENTO */}
-
-        <button className="opcao-perfil">
-
+        <button className="opcao-perfil" type="button">
           <div className="icone-opcao">
-
             <i className="fa-regular fa-credit-card"></i>
-
           </div>
-
-
           <div className="texto-opcao">
-
-            <h3>
-              Formas de pagamento
-            </h3>
-
-            <p>
-              Cartões cadastrados e histórico
-              de pagamentos
-            </p>
-
+            <h3>Formas de pagamento</h3>
+            <p>Cartões cadastrados e histórico de pagamentos</p>
           </div>
-
-
           <i className="fa-solid fa-chevron-right seta"></i>
-
         </button>
 
-
-        {/* AJUDA */}
-
-        <button className="opcao-perfil">
-
+        <button className="opcao-perfil" type="button">
           <div className="icone-opcao">
-
             <i className="fa-regular fa-circle-question"></i>
-
           </div>
-
-
           <div className="texto-opcao">
-
-            <h3>
-              Ajuda e suporte
-            </h3>
-
-            <p>
-              Perguntas frequentes e atendimento
-            </p>
-
+            <h3>Ajuda e suporte</h3>
+            <p>Perguntas frequentes e atendimento</p>
           </div>
-
-
           <i className="fa-solid fa-chevron-right seta"></i>
-
         </button>
-
       </section>
 
-
-      {/* =========================================
-          CONTA
-      ========================================== */}
-
       <section className="conta">
-
-        <h2>
-          Conta
-        </h2>
-
-
+        <h2>Conta</h2>
         <div className="opcoes-conta">
-
-          {/* SAIR */}
-
-          <button className="item-conta sair">
-
+          <button 
+            className="item-conta sair" 
+            type="button"
+            onClick={handleSair}
+          >
             <i className="fa-solid fa-arrow-right-from-bracket"></i>
-
-            <span>
-              Sair da conta
-            </span>
-
+            <span>Sair da conta</span>
             <i className="fa-solid fa-chevron-right"></i>
-
           </button>
-
         </div>
-
       </section>
 
     </main>

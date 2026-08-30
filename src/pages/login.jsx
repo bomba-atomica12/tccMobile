@@ -1,6 +1,12 @@
+import { useState } from "react";
+import { supabase } from "../supabase";
 import "./Autenticacao.css";
 
 function Login({ setPagina }) {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [mensagem, setMensagem] = useState("");
 
   const voltarHome = () => {
     setPagina("home");
@@ -8,6 +14,30 @@ function Login({ setPagina }) {
 
   const irParaCadastro = () => {
     setPagina("cadastro");
+  };
+
+ const handleLogin = async (e) => {
+    e.preventDefault();
+    setMensagem("");
+
+    console.log("Tentando logar com:", email);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    console.log("Resposta do Supabase:", { data, error });
+
+    if (error) {
+      setMensagem("Erro ao entrar: " + error.message);
+      return;
+    }
+
+    setMensagem("Login realizado com sucesso!");
+    setTimeout(() => {
+      setPagina("home");
+    }, 1000);
   };
 
   return (
@@ -22,6 +52,7 @@ function Login({ setPagina }) {
           <button
             className="auth-brand"
             onClick={voltarHome}
+            type="button"
           >
             Bella<span>.</span>
           </button>
@@ -46,7 +77,7 @@ function Login({ setPagina }) {
 
           <form
             className="auth-form"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleLogin}
           >
 
             {/* USUÁRIO / E-MAIL */}
@@ -57,16 +88,18 @@ function Login({ setPagina }) {
                 className="auth-label"
                 htmlFor="login"
               >
-                Usuário ou E-mail
+                E-mail
               </label>
 
               <input
                 className="auth-input"
                 id="login"
                 name="login"
-                type="text"
-                placeholder="Digite seu usuário ou e-mail"
-                autoComplete="username"
+                type="email"
+                placeholder="Digite seu e-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
                 required
               />
 
@@ -90,11 +123,26 @@ function Login({ setPagina }) {
                 name="password"
                 type="password"
                 placeholder="Digite sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 required
               />
 
             </div>
+
+            {mensagem && (
+              <p
+                style={{
+                  color: mensagem.includes("sucesso") ? "#4f8a61" : "#b94b65",
+                  fontSize: "1.3rem",
+                  marginTop: "1rem",
+                  textAlign: "center"
+                }}
+              >
+                {mensagem}
+              </p>
+            )}
 
 
             {/* BOTÃO */}
@@ -136,6 +184,7 @@ function Login({ setPagina }) {
 
           <button
             className="auth-back"
+            type="button"
             onClick={voltarHome}
           >
             ← Voltar para a página inicial

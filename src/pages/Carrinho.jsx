@@ -332,8 +332,7 @@ function Carrinho({ setPagina }) {
 
 
     alert(
-      "Pedido pronto para ser finalizado!\n\n" +
-      "A integração do pagamento pode ser adicionada posteriormente."
+      "Pedido pronto para ser finalizado!\n\n"
     );
 
   };
