@@ -665,7 +665,6 @@ function Procedimentos({ setPagina }) {
 
   return (
     <>
-      <Header setPagina={setPagina} />
 
       <main className="procedimentos-page">
 

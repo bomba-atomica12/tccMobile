@@ -5,7 +5,6 @@ import "./EditarPerfil.css";
 function EditarPerfil({ setPagina }) {
 
   const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
   const [fotoPreview, setFotoPreview] = useState("perfil.png");
   
   const [modalAberto, setModalAberto] = useState(false);
@@ -31,7 +30,6 @@ function EditarPerfil({ setPagina }) {
             .single();
 
           setNome(perfilData?.nome || user.user_metadata?.username || "");
-          setEmail(user.email || "");
           if (perfilData?.foto_url) {
             setFotoPreview(perfilData.foto_url);
           } else if (user.user_metadata?.avatar_url) {
@@ -46,7 +44,7 @@ function EditarPerfil({ setPagina }) {
     carregarDadosUsuario();
   }, []);
 
-  const abrirGaleriaSupabase = async () => {
+const abrirGaleriaSupabase = async () => {
     setCarregandoFotos(true);
     setModalAberto(true);
 
@@ -62,7 +60,7 @@ function EditarPerfil({ setPagina }) {
         return;
       }
 
-      const urls = data
+      let urls = data
         .filter((file) => file.name !== ".emptyFolderPlaceholder")
         .map((file) => {
           const { data: publicUrlData } = supabase.storage
@@ -70,6 +68,27 @@ function EditarPerfil({ setPagina }) {
             .getPublicUrl(file.name);
           return publicUrlData.publicUrl;
         });
+
+      // Pega o usuário logado e verifica propriedades comuns de foto externa/Google
+      const { data: { user } } = await supabase.auth.getUser();
+      const googleAvatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+
+      if (googleAvatar && !urls.includes(googleAvatar)) {
+        urls = [googleAvatar, ...urls];
+      }
+
+      // Busca também na tabela "perfis" para garantir que qualquer foto salva no banco apareça
+      if (user?.id) {
+        const { data: perfilData } = await supabase
+          .from("perfis")
+          .select("foto_url")
+          .eq("id", user.id)
+          .single();
+
+        if (perfilData?.foto_url && !urls.includes(perfilData.foto_url)) {
+          urls = [perfilData.foto_url, ...urls];
+        }
+      }
 
       setFotosDisponiveis(urls);
     } catch (err) {
@@ -94,14 +113,6 @@ function EditarPerfil({ setPagina }) {
       return;
     }
 
-    const emailLimpo = email.trim();
-    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailLimpo);
-
-    if (!emailLimpo || !emailValido) {
-      alert("Por favor, informe um e-mail válido.");
-      return;
-    }
-
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
@@ -109,9 +120,8 @@ function EditarPerfil({ setPagina }) {
         return;
       }
 
-      // 1. Atualizar e-mail e metadados no Auth
+      // 1. Atualizar metadados no Auth
       const { error: updateError } = await supabase.auth.updateUser({
-        email: emailLimpo,
         data: {
           username: nomeLimpo,
           avatar_url: fotoPreview,
@@ -137,7 +147,6 @@ function EditarPerfil({ setPagina }) {
       }
 
       localStorage.setItem("nomeUsuario", nomeLimpo);
-      localStorage.setItem("emailUsuario", emailLimpo);
       localStorage.setItem("fotoPerfil", fotoPreview);
 
       alert("Perfil atualizado com sucesso!");
@@ -210,22 +219,6 @@ function EditarPerfil({ setPagina }) {
             placeholder="Digite seu nome"
             value={nome}
             onChange={(event) => setNome(event.target.value)}
-            required
-          />
-        </div>
-
-        <div className="field-group">
-          <label htmlFor="email">
-            Email
-          </label>
-
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="ex: aaaaaa@gmail.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
             required
           />
         </div>

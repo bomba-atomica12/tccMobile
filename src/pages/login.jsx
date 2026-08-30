@@ -16,7 +16,7 @@ function Login({ setPagina }) {
     setPagina("cadastro");
   };
 
- const handleLogin = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setMensagem("");
 
@@ -38,6 +38,22 @@ function Login({ setPagina }) {
     setTimeout(() => {
       setPagina("home");
     }, 1000);
+  };
+
+  const handleGoogleLogin = async (e) => {
+    e.preventDefault();
+    setMensagem("");
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin + window.location.pathname,
+      },
+    });
+
+    if (error) {
+      setMensagem("Erro ao entrar com o Google: " + error.message);
+    }
   };
 
   return (
@@ -154,6 +170,7 @@ function Login({ setPagina }) {
               Entrar
             </button>
 
+
           </form>
 
 
@@ -163,6 +180,16 @@ function Login({ setPagina }) {
             <span>ou</span>
           </div>
 
+            {/* BOTÃO GOOGLE */}
+
+            <button
+              type="button"
+              className="auth-submit"
+              style={{ color: "#b94b65", backgroundColor: "#ffffff", marginTop: "1rem" }}
+              onClick={handleGoogleLogin}
+            >
+              Entrar com o Google
+            </button>
 
           {/* CADASTRO */}
 

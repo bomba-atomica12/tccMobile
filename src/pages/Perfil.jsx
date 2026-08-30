@@ -21,9 +21,19 @@ function Perfil({ setPagina }) {
         const user = session.user;
 
         if (user) {
-          setNome(user.user_metadata?.username || user.user_metadata?.nome || "Nome do Usuário");
+          // Busca primeiro da tabela "perfis" para priorizar a foto salva no banco[cite: 9]
+          const { data: perfilData } = await supabase
+            .from("perfis")
+            .select("nome, foto_url")
+            .eq("id", user.id)
+            .single();
+
+          setNome(perfilData?.nome || user.user_metadata?.username || user.user_metadata?.nome || "Nome do Usuário");
           setEmail(user.email || "usuario@email.com");
-          if (user.user_metadata?.avatar_url) {
+
+          if (perfilData?.foto_url) {
+            setFotoPerfil(perfilData.foto_url);
+          } else if (user.user_metadata?.avatar_url) {
             setFotoPerfil(user.user_metadata.avatar_url);
           } else {
             const fotoSalva = localStorage.getItem("fotoPerfil");
